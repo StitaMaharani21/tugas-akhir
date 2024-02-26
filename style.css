@@ -1,0 +1,26 @@
+.mx-auto {
+    width: 1000px;
+}
+
+.size {
+    width: 400px;
+}
+
+.margin {
+    margin-left: 50px;
+  }
+
+  .search-form {
+    display: flex;
+  }
+
+/* .sidebar {
+    margin-left: 20px;
+    margin-top: 20px;
+} */
+
+/* .center {
+    text-align: center;
+    font-size: 80px;
+} */
+
