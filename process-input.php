@@ -43,24 +43,57 @@ if ($var == "TAMBAH") {
         echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
     }
 } else if ($var == "KURANG") {
-    $sql_stokbarang = "INSERT INTO tabelstokbarang (Id_lokasi, Id_Barang, tglMasuk, saldo) VALUES ('$lokasi', '$kodeBarang', '$tgl_Input', '$saldo_transaksi')";
-    $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
+    $stokBarang = [];
+    $sql_stokbarang = "SELECT * FROM tabelstokbarang
+    WHERE Id_Barang = '$kodeBarang' ORDER BY tglMasuk ASC";
 
+    // echo "<pre>" . print_r(mysqli_query($conn, $sql_stokbarang)) . "</pre>";
+    //untuk mendapatkan list barang
+    $query = mysqli_query($conn, $sql_stokbarang);
+    while ($row = mysqli_fetch_assoc($query)) {
+        echo $row['saldo'];
+        if ($row['saldo'] > 0) {
+            $stokBarang[$row['tglMasuk']]['saldo'] = $row['saldo'];
+            $stokBarang[$row['tglMasuk']]['Id_Barang'] = $row['Id_Barang'];
+        }
+    }
 
-    
-    if ($query_stokbarang) {
-        $insertId = mysqli_insert_id($conn);
-        $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
+    //Buat Transaksi
+    $sisa_transaksi = 0;
+    foreach($stokBarang as $stok){
+        if($stok['saldo'] <= $saldo_transaksi){
+            $sisa_transaksi =  $saldo_transaksi - $stok['saldo'];
+        }elseif($saldo_transaksi < $stok['saldo']){
+            $sisa_stok = $stok['saldo'] - $saldo_transaksi;
+            
+        }
+        $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) 
+        VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
         $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
 
-        if ($query_transaksihistory) {
-            echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
-        } else {
-            echo "<script>alert('Gagal menambahkan data transaksihistory!'); window.location.href='index.php';</script>";
-        }
-    } else {
-        echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
     }
+
+
+
+
+
+    // $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
+    // $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
+
+
+    // if ($query_stokbarang) {
+    //     $insertId = mysqli_insert_id($conn);
+    //     $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
+    //     $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
+
+    //     if ($query_transaksihistory) {
+    //         echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
+    //     } else {
+    //         echo "<script>alert('Gagal menambahkan data transaksihistory!'); window.location.href='index.php';</script>";
+    //     }
+    // } else {
+    //     echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
+    // }
 }
 
 mysqli_close($conn);
