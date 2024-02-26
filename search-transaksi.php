@@ -2,56 +2,79 @@
 include 'connection.php';
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>searching data</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<style>
-
-</style>
-
 <body>
-    <!-- <div class="">
-        <h1 class="center">Stok Barang</h1>
-        <ul>
-            <li> <a href="input.php">Maintenance Stok </a></li>
-            <li><a href="#">Stock Items </a></li>
-        </ul>
-    </div> -->
-
-    <h1 class="text-center mt-5">PROGRAM STOK BARANG</h1>
-
-
-    <div class="card mx-auto mt-5 text-bg-secondary">
+    <div class="card mx-auto mt-5">
+        <div class="card-header">
+            Maintenance Stok
+        </div>
         <div class="card-body">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h5 class="ms-2">Transaction History</h5>
+            <form action="" method="POST">
+                <div class="mb-3">
+                    <label for="bukti" class="form-label">Bukti</label>
+                    <select class="form-select" aria-label="Default select example" id="bukti" name="bukti">
+                        <?php
+                        $sqlbukti = "SELECT * FROM transaksihistory
+                        INNER JOIN tabelstokbarang ON transaksihistory.Id_Stok = tabelstokbarang.id
+                        INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
+                        INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
+                        INNER JOIN masterprogram ON transaksihistory.Id_Program = masterprogram.Id
+                        INNER JOIN masteruser ON transaksihistory.Id_User = masteruser.Id";
+                        $qbukti = mysqli_query($conn, $sqlbukti);
+                        while ($rowbukti = mysqli_fetch_assoc($qbukti)) {
+                        ?>
+                            <option value="<?php echo $rowbukti['Id']; ?>"><?php echo $rowbukti['bukti']; ?></option>
+                        <?php } ?>
+                    </select>
                 </div>
-                <div class="col">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="input.php">
-                            <button class="btn btn-outline-light" type="button">Maintenance Stock</button>
-                        </a>
-                        <a href="search-transaksi.php">
-                            <button class="btn btn-outline-light" type="button">Search Transaction</button>
-                        </a>
-                    </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Location</label>
+                    <select class="form-select" aria-label="Default select example" id="lokasi" name="lokasi">
+                        <?php
+                        $sqlloc = "SELECT * FROM masterlokasi";
+                        $qloc = mysqli_query($conn, $sqlloc);
+                        while ($rowloc = mysqli_fetch_assoc($qloc)) {
+                        ?>
+                            <option value="<?php echo $rowloc['Id']; ?>"><?php echo $rowloc['lokasi']; ?></option>
+                        <?php } ?>
+                    </select>
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label for="kodeBarang" class="form-label">Kode Barang</label>
+                    <select class="form-select" aria-label="Default select example" id="kodeBarang" name="kodeBarang">
+                        <?php
+                        $sqlItem = "SELECT * FROM masterbarang";
+                        $qItem = mysqli_query($conn, $sqlItem);
+                        while ($rowItem = mysqli_fetch_assoc($qItem)) {
+                        ?>
+                            <option value="<?php echo $rowItem['Id']; ?>"><?php echo $rowItem['kodeBarang']; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
+                    <input type="date" class="form-control" id="tanggalInput" name="tgl_Input" value="<?php echo date('Y-m-d') ?>">
+                </div>
+                <div class="col mt-5px">
+                    <button type="" class="btn btn-primary">Search</button>
+                    <a href="index.php" class="btn btn-primary">Cancel</a>
+                </div>
+            </form>
         </div>
     </div>
 
 
-    <!-- untuk display table transaksi -->
+<!-- menampilkan data transaksi history -->
     <div class="card mx-auto mt-2">
         <div class="card">
             <div class="container">
@@ -149,70 +172,6 @@ include 'connection.php';
         </div>
     </div>
 
-
-    <!-- untuk display table stok barang -->
-
-    <div class="card mx-auto mt-5 text-bg-secondary">
-        <div class="card-body">
-        <div class="row align-items-center">
-                <div class="col">
-                    <h5 class="ms-2">Item Stock</h5>
-                </div>
-                <div class="col">
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="search-stock.php">
-                            <button class="btn btn-outline-light" type="button">Search Stock</button>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card mx-auto mt-2">
-        <div class="card">
-            <div class="container">
-                <!-- <a href="search-stock.php">
-                    <button type="button" class="btn btn-primary mb-2 mt-2">Search Data</button>
-                </a> -->
-            </div>
-        </div>
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead class="table-primary">
-                    <tr>
-                        <th scope="col">Lokasi</th>
-                        <th scope="col">Kode Barang</th>
-                        <th scope="col">Nama Barang</th>
-                        <th scope="col">Saldo</th>
-                        <th scope="col">Tanggal Masuk</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $sql = "SELECT * FROM tabelstokbarang 
-                    INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
-                    INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    ORDER BY kodeBarang, tglMasuk ASC
-                    ";
-
-                    $query = mysqli_query($conn, $sql);
-                    while ($row = mysqli_fetch_assoc($query)) {
-                    ?>
-                        <tr>
-                            <td scope="row"><?php echo $row['lokasi']; ?></td>
-                            <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                            <td scope="row"><?php echo $row['namaBarang']; ?></td>
-                            <td scope="row"><?php echo $row['saldo']; ?></td>
-                            <td scope="row"><?php echo $row['tglMasuk']; ?></td>
-                        </tr>
-                    <?php }
-                    ?>
-
-                </tbody>
-            </table>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
