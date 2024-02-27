@@ -22,6 +22,7 @@ include 'connection.php';
                 <div class="mb-3">
                     <label for="program" class="form-label">Jenis Transaksi</label>
                     <select class="form-select" aria-label="Default select example" id="program" name="program">
+                        <option value="">Pilih Jenis Transaksi</option>
                         <?php
                         $sqlprog = "SELECT * FROM masterprogram";
                         $qprog = mysqli_query($conn, $sqlprog);
@@ -39,6 +40,7 @@ include 'connection.php';
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
                     <select class="form-select" aria-label="Default select example" id="lokasi" name="lokasi">
+                        <option value="">Pilih Lokasi</option>
                         <?php
                         $sqlloc = "SELECT * FROM masterlokasi";
                         $qloc = mysqli_query($conn, $sqlloc);
@@ -51,6 +53,7 @@ include 'connection.php';
                 <div class="mb-3">
                     <label for="kodeBarang" class="form-label">Kode Barang</label>
                     <select class="form-select" aria-label="Default select example" id="kodeBarang" name="kodeBarang">
+                        <option value="">Pilih Kode Barang</option>
                         <?php
                         $sqlItem = "SELECT * FROM masterbarang";
                         $qItem = mysqli_query($conn, $sqlItem);
@@ -62,15 +65,7 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="" class="form-label">Nama Barang</label>
-                    <input type="text" class="form-control" id="namaBarang" name="namaBarang" readonly value="<?php
-                                                                                                                $sql = "SELECT * FROM masterbarang";
-                                                                                                                $q = mysqli_query($conn, $sql);
-                                                                                                                while ($row = mysqli_fetch_assoc($q)) {
-                                                                                                                    if ($row['Id'] == 1) {
-                                                                                                                        echo $row['namaBarang'];
-                                                                                                                    }
-                                                                                                                }
-                                                                                                                ?>">
+                    <input type="text" class="form-control" id="namaBarang" name="namaBarang" readonly value="">
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
@@ -97,15 +92,18 @@ include 'connection.php';
         if (program == 1) {
             bukti.value = <?php
                             $sql = "SELECT * FROM transaksihistory WHERE bukti LIKE 'TAMBAH%' ORDER BY bukti DESC";
-                            // hitung berapa jumlah bukti yang berisi awalan KURANG
                             $q = mysqli_query($conn, $sql);
-                            $row = mysqli_fetch_assoc($q);
-                            $jumlah = substr($row['bukti'], 6);
-                            // jika tambah lebih dari 9 maka bukti akan diisi dengan TAMBAH
-                            if ($jumlah > 8) {
-                                echo '"TAMBAH' . ($jumlah + 1) . '"';
+                            if (mysqli_num_rows($q) == 0) {
+                                echo '"TAMBAH01"';
                             } else {
-                                echo '"TAMBAH0' . ($jumlah + 1) . '"';
+                                $row = mysqli_fetch_assoc($q);
+                                $jumlah = substr($row['bukti'], 6);
+                                // jika kurang lebih dari 9 maka bukti akan diisi dengan KURANG
+                                if ($jumlah > 8) {
+                                    echo '"TAMBAH' . ($jumlah + 1) . '"';
+                                } else {
+                                    echo '"TAMBAH0' . ($jumlah + 1) . '"';
+                                }
                             }
                             ?>;
         } else {
@@ -114,20 +112,19 @@ include 'connection.php';
                             $sql = "SELECT * FROM transaksihistory WHERE bukti LIKE 'KURANG%' ORDER BY bukti DESC";
                             // hitung berapa jumlah bukti yang berisi awalan KURANG
                             $q = mysqli_query($conn, $sql);
-                            $row = mysqli_fetch_assoc($q);
-                            //untuk mendapatkan nomor
-                            
-                            if(empty($row)){
-                                echo "KURANG01";
-                                exit;
-                            }
-                            $jumlah = substr($row['bukti'], 6);
-                            // jika kurang lebih dari 9 maka bukti akan diisi dengan KURANG
-                            if ($jumlah > 8) {
-                                echo '"KURANG' . ($jumlah + 1) . '"';
+                            if (mysqli_num_rows($q) == 0) {
+                                echo '"KURANG01"';
                             } else {
-                                echo '"KURANG0' . ($jumlah + 1) . '"';
+                                $row = mysqli_fetch_assoc($q);
+                                $jumlah = substr($row['bukti'], 6);
+                                // jika kurang lebih dari 9 maka bukti akan diisi dengan KURANG
+                                if ($jumlah > 8) {
+                                    echo '"KURANG' . ($jumlah + 1) . '"';
+                                } else {
+                                    echo '"KURANG0' . ($jumlah + 1) . '"';
+                                }
                             }
+
                             ?>;
         }
     });

@@ -1,18 +1,25 @@
 <?php
 include 'connection.php';
-
-
-
 $program = $_POST['program'];
 $bukti = $_POST['bukti'];
 $lokasi = $_POST['lokasi'];
 $kodeBarang = $_POST['kodeBarang'];
 $namaBarang = $_POST['namaBarang'];
 $tgl_Input = $_POST['tgl_Input'];
+$saldo_transaksi = $_POST['saldo_transaksi'];
+
+if ($_POST['program'] == null || $_POST['bukti'] == null || $_POST['lokasi'] == null || $_POST['kodeBarang'] == null || $_POST['namaBarang'] == null || $_POST['tgl_Input'] == null || $_POST['saldo_transaksi'] == null) {
+
+    echo "<script>alert('Silakan Isi Form yang Kosong!'); window.location.href='input.php';</script>";
+    exit;
+}
+
+
 date_default_timezone_set('Asia/Jakarta');
 $jamInput = date('H:i:s');
-$saldo_transaksi = $_POST['saldo_transaksi'];
 $user = 1;
+
+
 
 $sql_validasi = "SELECT tglMasuk FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' ORDER BY tglMasuk DESC LIMIT 1";
 $result_validasi = mysqli_query($conn, $sql_validasi);
@@ -45,100 +52,47 @@ if ($var == "TAMBAH") {
         echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
     }
 } else if ($var == "KURANG") {
-    
-    $sql_stokbarang = "SELECT Id, saldo FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' AND saldo > 0 ORDER BY tglMasuk ASC";
-    $query = mysqli_query($conn, $sql_stokbarang);
-    // echo "<pre>" . print_r(mysqli_query($conn, $sql_stokbarang)) . "</pre>";
-    //untuk mendapatkan list barang
-
-    
-    
-    while ($row = mysqli_fetch_assoc($query)) {
-        $saldo_stok = $row['saldo'];
-        $id_stok = $row['Id'];
-
-        // if($saldo_transaksi < $saldo_stok) {
-        //     $total_transaksi = $saldo_transaksi;
-        // } else {
-        //     $total_transaksi = $saldo_stok;
-        // }
-        
-        //mencari nilai minimum untuk dikurangi ke saldo
-        $total_transaksi = min($saldo_transaksi, $saldo_stok);
-        
-        $saldo_transaksi -= $total_transaksi;
-        $saldo_stok -= $total_transaksi;
-
-        
-        //untuk proses update saldo pada tabelstokbarang
-        $sql_update = "UPDATE tabelstokbarang SET saldo = '$saldo_stok' WHERE Id = '$id_stok'";
-        $query_update = mysqli_query($conn, $sql_update);
-
-        if ($query_update) {
-            echo "<script>alert('Data berhasil ditambahkan ke tabel transaksi!'); window.location.href='index.php';</script>";
-        } else {
-            echo "<script>alert('Gagal menambahkan data ke tabel transaksi!'); window.location.href='index.php';</script>";
-        }
-
-        //proses insert ke tabel transaksi history untuk data baru dari tabelstokbarang
-        $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$id_stok', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-$total_transaksi')";
-        $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
-
-        if ($query_update) {
-            echo "<script>alert('Data berhasil ditambahkan ke tabel transaksi!'); window.location.href='index.php';</script>";
-        } else {
-            echo "<script>alert('Gagal menambahkan data ke tabel transaksi!'); window.location.href='index.php';</script>";
-        }
-
-        // if($saldo_stok < $saldo_transaksi){
-        //     echo "<script>alert('stok barang kurang!'); window.location.href='index.php';</script>";
-        //     exit;
-        // }
-
-        if ($saldo_transaksi == 0) {
-            break;
-        }
-
-
+    $sql_stokbarang = "SELECT * FROM tabelstokbarang WHERE saldo > 0 AND Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' ORDER BY tglMasuk ASC";
+    $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
+    //menghitung stok saat ini dari tabelstokbarang berdasarkan array
+    $stokbarang = array();
+    while ($row = mysqli_fetch_assoc($query_stokbarang)) {
+        $stokbarang[] = $row;
+        //beurutan array nya sesuai tgl masuk
+        //misanya list barangnya aopa
+        //{saldo ; 10}
+        //{saldo}
     }
-
-    //Buat Transaksi
-    // $sisa_transaksi = 0;
-    // foreach($stokBarang as $stok){
-    //     if($stok['saldo'] <= $saldo_transaksi){
-    //         $sisa_transaksi =  $saldo_transaksi - $stok['saldo'];
-    //     }elseif($saldo_transaksi < $stok['saldo']){
-    //         $sisa_stok = $stok['saldo'] - $saldo_transaksi;
-            
-    //     }
-    //     $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) 
-    //     VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
-    //     $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
-
-    // }
-
-
-
-
-
-    // $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
-    // $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
-
-
-    // if ($query_stokbarang) {
-    //     $insertId = mysqli_insert_id($conn);
-    //     $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
-    //     $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
-
-    //     if ($query_transaksihistory) {
-    //         echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
-    //     } else {
-    //         echo "<script>alert('Gagal menambahkan data transaksihistory!'); window.location.href='index.php';</script>";
-    //     }
-    // } else {
-    //     echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
-    // }
+    $i = 0;
+    //saldo 100
+    //saldo 50
+    while ($saldo_transaksi > 0) {
+        //mengurangi stok barang berdasarkan index
+        if ($stokbarang[$i]['saldo'] >= $saldo_transaksi) {
+            //untuk mengetahui id yang mana
+            $sql_stokbarang = "UPDATE tabelstokbarang SET saldo = saldo - $saldo_transaksi WHERE Id = " . $stokbarang[$i]['Id'];
+            $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
+            $insertId = $stokbarang[$i]['Id'];
+            $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-$saldo_transaksi')";
+            $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
+            $saldo_transaksi = 0;
+        } else {
+            //$saldo = saldo transakasi
+            $saldo_transaksi -= $stokbarang[$i]['saldo'];
+            $sql_stokbarang = "UPDATE tabelstokbarang SET saldo = 0 WHERE Id = " . $stokbarang[$i]['Id'];
+            $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
+            //barang yang dikurang sebelumnya
+            $insertId = $stokbarang[$i]['Id'];
+            $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}')";
+            $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
+            $i++;
+        }
+    }
+    if ($saldo_transaksi > 0) {
+        echo "<script>alert('Saldo barang tidak mencukupi!'); window.location.href='index.php';</script>";
+        exit;
+    }
+    echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
 }
 
 mysqli_close($conn);
-?>

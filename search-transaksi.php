@@ -23,6 +23,7 @@ include 'connection.php';
                 <div class="mb-3">
                     <label for="bukti" class="form-label">Bukti</label>
                     <select class="form-select" aria-label="Default select example" id="bukti" name="bukti">
+                        <option value="" selected>Select Bukti</option>
                         <?php
                         $sqlbukti = "SELECT * FROM transaksihistory
                         INNER JOIN tabelstokbarang ON transaksihistory.Id_Stok = tabelstokbarang.id
@@ -33,40 +34,42 @@ include 'connection.php';
                         $qbukti = mysqli_query($conn, $sqlbukti);
                         while ($rowbukti = mysqli_fetch_assoc($qbukti)) {
                         ?>
-                            <option value="<?php echo $rowbukti['Id']; ?>"><?php echo $rowbukti['bukti']; ?></option>
+                            <option value="<?php echo $rowbukti['bukti']; ?>"><?php echo $rowbukti['bukti']; ?></option>
                         <?php } ?>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
                     <select class="form-select" aria-label="Default select example" id="lokasi" name="lokasi">
+                        <option value="" selected>Select Location</option>
                         <?php
                         $sqlloc = "SELECT * FROM masterlokasi";
                         $qloc = mysqli_query($conn, $sqlloc);
                         while ($rowloc = mysqli_fetch_assoc($qloc)) {
                         ?>
-                            <option value="<?php echo $rowloc['Id']; ?>"><?php echo $rowloc['lokasi']; ?></option>
+                            <option value="<?php echo $rowloc['lokasi']; ?>"><?php echo $rowloc['lokasi']; ?></option>
                         <?php } ?>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="kodeBarang" class="form-label">Kode Barang</label>
                     <select class="form-select" aria-label="Default select example" id="kodeBarang" name="kodeBarang">
+                        <option value="" selected>Select Kode Barang</option>
                         <?php
                         $sqlItem = "SELECT * FROM masterbarang";
                         $qItem = mysqli_query($conn, $sqlItem);
                         while ($rowItem = mysqli_fetch_assoc($qItem)) {
                         ?>
-                            <option value="<?php echo $rowItem['Id']; ?>"><?php echo $rowItem['kodeBarang']; ?></option>
+                            <option value="<?php echo $rowItem['kodeBarang']; ?>"><?php echo $rowItem['kodeBarang']; ?></option>
                         <?php } ?>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
-                    <input type="date" class="form-control" id="tanggalInput" name="tgl_Input" value="<?php echo date('Y-m-d') ?>">
+                    <input type="date" class="form-control" id="tanggalInput" name="tgl_Input" value="">
                 </div>
                 <div class="col mt-5px">
-                    <button type="" class="btn btn-primary">Search</button>
+                <input type="submit" name="cari" value="Search" class="btn btn-primary" />
                     <a href="index.php" class="btn btn-primary">Cancel</a>
                 </div>
             </form>
@@ -74,7 +77,7 @@ include 'connection.php';
     </div>
 
 
-<!-- menampilkan data transaksi history -->
+    <!-- menampilkan data transaksi history -->
     <div class="card mx-auto mt-2">
         <div class="card">
             <div class="container">
@@ -100,73 +103,53 @@ include 'connection.php';
                     </tr>
                 </thead>
                 <tbody>
+
                     <?php
-                    $sql = "SELECT * FROM transaksihistory
+
+                    if (isset($_POST['cari'])) {
+                        $lokasi = $_POST['lokasi'];
+                        $kodeBarang = $_POST['kodeBarang'];
+                        $bukti = $_POST['bukti'];
+                        $tgl_Input = $_POST['tgl_Input'];
+
+                        $sql = "SELECT * FROM transaksihistory
                     INNER JOIN tabelstokbarang ON transaksihistory.Id_Stok = tabelstokbarang.id
                     INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
                     INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
                     INNER JOIN masterprogram ON transaksihistory.Id_Program = masterprogram.Id
                     INNER JOIN masteruser ON transaksihistory.Id_User = masteruser.Id
-                    ORDER BY kodeBarang, jam_Input,tgl_Input  ASC, bukti DESC
+                    
                     ";
-                    $query = mysqli_query($conn, $sql);
-                    while ($row = mysqli_fetch_assoc($query)) {
-                        // pisahkan struktur bukti dari yang TAMBAH01 menjadi TAMBAH 01 di variabel yang baru
-                        $var = substr($row['bukti'], 0, 6);
-                        $int = substr($row['bukti'], 6);
 
-                        if ($var == "TAMBAH") {
-                        } else if ($var == "KURANG") {
-                            continue;
+                        if ($bukti && $kodeBarang && $lokasi && $tgl_Input) {
+                            $sql .= "WHERE lokasi LIKE '%$lokasi%' AND kodeBarang LIKE '%$kodeBarang%' AND bukti LIKE '%$bukti%' AND tgl_Input = '{$tgl_Input}' ";
+                        } else {
+                            echo "<script>alert('Silakan Lengkapi Data Form!'); window.location.href='search-transaksi.php';</script>";
+                            exit;
                         }
+                        
+                        $sql .= "ORDER BY jam_Input,tgl_Input  ASC, bukti DESC";
+
+
+                        $query = mysqli_query($conn, $sql);
+                        while ($row = mysqli_fetch_assoc($query)) {
+
                     ?>
-                        <tr>
-                            <td scope="row"><?php echo $row['bukti']; ?></td>
-                            <td scope="row"><?php echo $row['tgl_Input']; ?></td>
-                            <td scope="row"><?php echo $row['jam_Input']; ?></td>
-                            <td scope="row"><?php echo $row['lokasi']; ?></td>
-                            <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                            <td scope="row"><?php echo $row['tglMasuk']; ?></td>
-                            <td scope="row"><?php echo $row['saldo_transaksi']; ?></td>
-                            <td scope="row"><?php echo $row['program']; ?></td>
-                            <td scope="row"><?php echo $row['User']; ?></td>
-                        </tr>
+                            <tr>
+                                <td scope="row"><?php echo $row['bukti']; ?></td>
+                                <td scope="row"><?php echo $row['tgl_Input']; ?></td>
+                                <td scope="row"><?php echo $row['jam_Input']; ?></td>
+                                <td scope="row"><?php echo $row['lokasi']; ?></td>
+                                <td scope="row"><?php echo $row['kodeBarang']; ?></td>
+                                <td scope="row"><?php echo $row['tglMasuk']; ?></td>
+                                <td scope="row"><?php echo $row['saldo_transaksi']; ?></td>
+                                <td scope="row"><?php echo $row['program']; ?></td>
+                                <td scope="row"><?php echo $row['User']; ?></td>
+                            </tr>
                     <?php }
+                    }
                     ?>
 
-                    <?php
-                    $sql = "SELECT * FROM transaksihistory
-                    INNER JOIN tabelstokbarang ON transaksihistory.Id_Stok = tabelstokbarang.id
-                    INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
-                    INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    INNER JOIN masterprogram ON transaksihistory.Id_Program = masterprogram.Id
-                    INNER JOIN masteruser ON transaksihistory.Id_User = masteruser.Id
-                    ORDER BY kodeBarang, jam_Input,tgl_Input  ASC, bukti DESC
-                    ";
-                    $query = mysqli_query($conn, $sql);
-                    while ($row = mysqli_fetch_assoc($query)) {
-                        // pisahkan struktur bukti dari yang TAMBAH01 menjadi TAMBAH 01 di variabel yang baru
-                        $var = substr($row['bukti'], 0, 6);
-                        $int = substr($row['bukti'], 6);
-
-                        if ($var == "TAMBAH") {
-                            continue;
-                        } else if ($var == "KURANG") {
-                        }
-                    ?>
-                        <tr>
-                            <td scope="row"><?php echo $row['bukti']; ?></td>
-                            <td scope="row"><?php echo $row['tgl_Input']; ?></td>
-                            <td scope="row"><?php echo $row['jam_Input']; ?></td>
-                            <td scope="row"><?php echo $row['lokasi']; ?></td>
-                            <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                            <td scope="row"><?php echo $row['tglMasuk']; ?></td>
-                            <td scope="row"><?php echo $row['saldo_transaksi']; ?></td>
-                            <td scope="row"><?php echo $row['program']; ?></td>
-                            <td scope="row"><?php echo $row['User']; ?></td>
-                        </tr>
-                    <?php }
-                    ?>
                 </tbody>
             </table>
         </div>

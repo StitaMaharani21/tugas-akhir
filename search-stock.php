@@ -30,7 +30,7 @@ include 'connection.php';
                         $qloc = mysqli_query($conn, $sqlloc);
                         while ($rowloc = mysqli_fetch_assoc($qloc)) {
                         ?>
-                            <option value="<?php echo $rowloc['Id']; ?>"><?php echo $rowloc['lokasi']; ?></option>
+                            <option value="<?php echo $rowloc['lokasi']; ?>"><?php echo $rowloc['lokasi']; ?></option>
                         <?php } ?>
                     </select>
                 </div>
@@ -43,7 +43,7 @@ include 'connection.php';
                         $qItem = mysqli_query($conn, $sqlItem);
                         while ($rowItem = mysqli_fetch_assoc($qItem)) {
                         ?>
-                            <option value="<?php echo $rowItem['Id']; ?>"><?php echo $rowItem['kodeBarang']; ?></option>
+                            <option value="<?php echo $rowItem['kodeBarang']; ?>"><?php echo $rowItem['kodeBarang']; ?></option>
                         <?php } ?>
                     </select>
                 </div>
@@ -73,28 +73,36 @@ include 'connection.php';
                     if (isset($_POST['cari'])) {
                         $lokasi = $_POST['lokasi'];
                         $kodeBarang = $_POST['kodeBarang'];
-
-                        if ($lokasi && $kodeBarang) {
-                            $sql = "SELECT * FROM tabelstokbarang 
+                        $sql = "SELECT * FROM tabelstokbarang 
                                 INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
                                 INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id 
-                                WHERE lokasi LIKE '%$lokasi%' AND kodeBarang LIKE '%$kodeBarang%'
-                                ORDER BY kodeBarang, tglMasuk ASC";
-                            $result = mysqli_query($conn, $sql);
+                                ";
 
-                            while ($row = mysqli_fetch_array($result)) {
+                        if ($lokasi && $kodeBarang) {
+                            $sql .= "WHERE lokasi LIKE '%$lokasi%' AND kodeBarang LIKE '%$kodeBarang%'";
+                        } elseif ($lokasi && $kodeBarang == '') {
+                            $sql .= "WHERE lokasi LIKE '%$lokasi%'";
+                        } elseif ($kodeBarang && $lokasi == '') {
+                            $sql .= "WHERE kodeBarang LIKE '%$kodeBarang%'";
+                        }
+
+                        $sql .= "ORDER BY kodeBarang, tglMasuk ASC";
+
+                        $result = mysqli_query($conn, $sql);
+
+                        while ($row = mysqli_fetch_array($result)) {
                     ?>
-                                <tr>
-                                    <td scope="row"><?php echo $row['lokasi']; ?></td>
-                                    <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                                    <td scope="row"><?php echo $row['namaBarang']; ?></td>
-                                    <td scope="row"><?php echo $row['saldo']; ?></td>
-                                    <td scope="row"><?php echo $row['tglMasuk']; ?></td>
-                                </tr>
+                            <tr>
+                                <td scope="row"><?php echo $row['lokasi']; ?></td>
+                                <td scope="row"><?php echo $row['kodeBarang']; ?></td>
+                                <td scope="row"><?php echo $row['namaBarang']; ?></td>
+                                <td scope="row"><?php echo $row['saldo']; ?></td>
+                                <td scope="row"><?php echo $row['tglMasuk']; ?></td>
+                            </tr>
                     <?php
-                            }
                         }
                     }
+
                     ?>
                 </tbody>
             </table>

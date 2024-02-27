@@ -84,52 +84,11 @@ include 'connection.php';
                     INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
                     INNER JOIN masterprogram ON transaksihistory.Id_Program = masterprogram.Id
                     INNER JOIN masteruser ON transaksihistory.Id_User = masteruser.Id
-                    ORDER BY kodeBarang, jam_Input,tgl_Input  ASC, bukti DESC
+                    ORDER BY jam_Input,tgl_Input  ASC, bukti DESC
                     ";
                     $query = mysqli_query($conn, $sql);
                     while ($row = mysqli_fetch_assoc($query)) {
-                        // pisahkan struktur bukti dari yang TAMBAH01 menjadi TAMBAH 01 di variabel yang baru
-                        $var = substr($row['bukti'], 0, 6);
-                        $int = substr($row['bukti'], 6);
-
-                        if ($var == "TAMBAH") {
-                        } else if ($var == "KURANG") {
-                            continue;
-                        }
-                    ?>
-                        <tr>
-                            <td scope="row"><?php echo $row['bukti']; ?></td>
-                            <td scope="row"><?php echo $row['tgl_Input']; ?></td>
-                            <td scope="row"><?php echo $row['jam_Input']; ?></td>
-                            <td scope="row"><?php echo $row['lokasi']; ?></td>
-                            <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                            <td scope="row"><?php echo $row['tglMasuk']; ?></td>
-                            <td scope="row"><?php echo $row['saldo_transaksi']; ?></td>
-                            <td scope="row"><?php echo $row['program']; ?></td>
-                            <td scope="row"><?php echo $row['User']; ?></td>
-                        </tr>
-                    <?php }
-                    ?>
-
-                    <?php
-                    $sql = "SELECT * FROM transaksihistory
-                    INNER JOIN tabelstokbarang ON transaksihistory.Id_Stok = tabelstokbarang.id
-                    INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
-                    INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    INNER JOIN masterprogram ON transaksihistory.Id_Program = masterprogram.Id
-                    INNER JOIN masteruser ON transaksihistory.Id_User = masteruser.Id
-                    ORDER BY kodeBarang, jam_Input,tgl_Input ASC, bukti DESC
-                    ";
-                    $query = mysqli_query($conn, $sql);
-                    while ($row = mysqli_fetch_assoc($query)) {
-                        // pisahkan struktur bukti dari yang TAMBAH01 menjadi TAMBAH 01 di variabel yang baru
-                        $var = substr($row['bukti'], 0, 6);
-                        $int = substr($row['bukti'], 6);
-
-                        if ($var == "TAMBAH") {
-                            continue;
-                        } else if ($var == "KURANG") {
-                        }
+                        
                     ?>
                         <tr>
                             <td scope="row"><?php echo $row['bukti']; ?></td>
