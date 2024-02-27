@@ -118,7 +118,7 @@ include 'connection.php';
                     INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
                     INNER JOIN masterprogram ON transaksihistory.Id_Program = masterprogram.Id
                     INNER JOIN masteruser ON transaksihistory.Id_User = masteruser.Id
-                    ORDER BY kodeBarang, jam_Input,tgl_Input  ASC, bukti DESC
+                    ORDER BY kodeBarang, jam_Input,tgl_Input ASC, bukti DESC
                     ";
                     $query = mysqli_query($conn, $sql);
                     while ($row = mysqli_fetch_assoc($query)) {
@@ -193,7 +193,7 @@ include 'connection.php';
                     $sql = "SELECT * FROM tabelstokbarang 
                     INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
                     INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    ORDER BY kodeBarang, tglMasuk ASC
+                    ORDER BY kodeBarang, tglMasuk ASC, tabelstokbarang.Id ASC
                     ";
 
                     $query = mysqli_query($conn, $sql);
