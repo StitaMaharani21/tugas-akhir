@@ -1,6 +1,8 @@
 <?php
 include 'connection.php';
 
+
+
 $program = $_POST['program'];
 $bukti = $_POST['bukti'];
 $lokasi = $_POST['lokasi'];
@@ -43,7 +45,7 @@ if ($var == "TAMBAH") {
         echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
     }
 } else if ($var == "KURANG") {
-
+    
     $sql_stokbarang = "SELECT Id, saldo FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' AND saldo > 0 ORDER BY tglMasuk ASC";
     $query = mysqli_query($conn, $sql_stokbarang);
     // echo "<pre>" . print_r(mysqli_query($conn, $sql_stokbarang)) . "</pre>";
@@ -61,13 +63,14 @@ if ($var == "TAMBAH") {
         //     $total_transaksi = $saldo_stok;
         // }
         
+        //mencari nilai minimum untuk dikurangi ke saldo
         $total_transaksi = min($saldo_transaksi, $saldo_stok);
         
         $saldo_transaksi -= $total_transaksi;
         $saldo_stok -= $total_transaksi;
 
         
-
+        //untuk proses update saldo pada tabelstokbarang
         $sql_update = "UPDATE tabelstokbarang SET saldo = '$saldo_stok' WHERE Id = '$id_stok'";
         $query_update = mysqli_query($conn, $sql_update);
 
@@ -77,6 +80,7 @@ if ($var == "TAMBAH") {
             echo "<script>alert('Gagal menambahkan data ke tabel transaksi!'); window.location.href='index.php';</script>";
         }
 
+        //proses insert ke tabel transaksi history untuk data baru dari tabelstokbarang
         $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$id_stok', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-$total_transaksi')";
         $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
 
@@ -137,6 +141,4 @@ if ($var == "TAMBAH") {
 }
 
 mysqli_close($conn);
-
-
 ?>
