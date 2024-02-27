@@ -33,21 +33,7 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="bukti" class="form-label">Bukti</label>
-                    <input type="text" class="form-control" id="bukti" name="bukti" readonly value="<?php
-                                                                                                    $sql = "SELECT * FROM transaksihistory";
-                                                                                                    $q = mysqli_query($conn, $sql);
-                                                                                                    $jumlah = 0;
-                                                                                                    while ($row = mysqli_fetch_assoc($q)) {
-                                                                                                        if (substr($row['bukti'], 0, 6) == "TAMBAH") {
-                                                                                                            $jumlah++;
-                                                                                                        }
-                                                                                                    }
-                                                                                                    if ($jumlah > 8) {
-                                                                                                        echo "TAMBAH" . ($jumlah + 1);
-                                                                                                    } else {
-                                                                                                        echo "TAMBAH0" . ($jumlah + 1);
-                                                                                                    }
-                                                                                                    ?>">
+                    <input type="text" class="form-control" id="bukti" name="bukti" readonly value="">
 
                 </div>
                 <div class="mb-3">
@@ -77,14 +63,14 @@ include 'connection.php';
                 <div class="mb-3">
                     <label for="" class="form-label">Nama Barang</label>
                     <input type="text" class="form-control" id="namaBarang" name="namaBarang" readonly value="<?php
-                                                                                                            $sql = "SELECT * FROM masterbarang";
-                                                                                                            $q = mysqli_query($conn, $sql);
-                                                                                                            while ($row = mysqli_fetch_assoc($q)) {
-                                                                                                                if ($row['Id'] == 1) {
-                                                                                                                    echo $row['namaBarang'];
+                                                                                                                $sql = "SELECT * FROM masterbarang";
+                                                                                                                $q = mysqli_query($conn, $sql);
+                                                                                                                while ($row = mysqli_fetch_assoc($q)) {
+                                                                                                                    if ($row['Id'] == 1) {
+                                                                                                                        echo $row['namaBarang'];
+                                                                                                                    }
                                                                                                                 }
-                                                                                                            }
-                                                                                                            ?>">
+                                                                                                                ?>">
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
@@ -110,16 +96,11 @@ include 'connection.php';
         var bukti = document.getElementById('bukti');
         if (program == 1) {
             bukti.value = <?php
-                            // ambil semua data transaksihistory
-                            $sql = "SELECT * FROM transaksihistory";
-                            // hitung berapa jumlah bukti yang berisi awalan TAMBAH
+                            $sql = "SELECT * FROM transaksihistory WHERE bukti LIKE 'TAMBAH%' ORDER BY bukti DESC";
+                            // hitung berapa jumlah bukti yang berisi awalan KURANG
                             $q = mysqli_query($conn, $sql);
-                            $jumlah = 0;
-                            while ($row = mysqli_fetch_assoc($q)) {
-                                if (substr($row['bukti'], 0, 6) == "TAMBAH") {
-                                    $jumlah++;
-                                }
-                            }
+                            $row = mysqli_fetch_assoc($q);
+                            $jumlah = substr($row['bukti'], 6);
                             // jika tambah lebih dari 9 maka bukti akan diisi dengan TAMBAH
                             if ($jumlah > 8) {
                                 echo '"TAMBAH' . ($jumlah + 1) . '"';
@@ -129,16 +110,18 @@ include 'connection.php';
                             ?>;
         } else {
             bukti.value = <?php
-                            // ambil semua data transaksihistory
-                            $sql = "SELECT * FROM transaksihistory";
+                            // hanya mencari yang ada kata kurang
+                            $sql = "SELECT * FROM transaksihistory WHERE bukti LIKE 'KURANG%' ORDER BY bukti DESC";
                             // hitung berapa jumlah bukti yang berisi awalan KURANG
                             $q = mysqli_query($conn, $sql);
-                            $jumlah = 0;
-                            while ($row = mysqli_fetch_assoc($q)) {
-                                if (substr($row['bukti'], 0, 6) == "KURANG") {
-                                    $jumlah++;
-                                }
+                            $row = mysqli_fetch_assoc($q);
+                            //untuk mendapatkan nomor
+                            
+                            if(empty($row)){
+                                echo "KURANG01";
+                                exit;
                             }
+                            $jumlah = substr($row['bukti'], 6);
                             // jika kurang lebih dari 9 maka bukti akan diisi dengan KURANG
                             if ($jumlah > 8) {
                                 echo '"KURANG' . ($jumlah + 1) . '"';
