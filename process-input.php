@@ -32,12 +32,27 @@ $var = substr($bukti, 0, 6);
 $int = substr($bukti, 6);
 
 if ($var == "TAMBAH") {
-    $sql_stokbarang = "INSERT INTO tabelstokbarang (Id_lokasi, Id_Barang, tglMasuk, saldo) VALUES ('$lokasi', '$kodeBarang', '$tgl_Input', '$saldo_transaksi')";
+    $sql_stokbarang = "SELECT * FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' AND tglMasuk = '$tgl_input' ORDER BY tglMasuk ASC";
     $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
 
     if ($query_stokbarang) {
-        $insertId = mysqli_insert_id($conn);
-        $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
+        $result_stokbarang = mysqli_fetch_assoc($query_stokbarang);
+        echo print_r($result_stokbarang);
+        // $sql_update = "UPDATE tabelstokbarang SET saldo = saldo + $saldo_transaksi WHERE Id = " . $result_stokbarang['Id'];
+        // $query_update = mysqli_query($conn, $sql_update);
+    } else {
+        echo $sql_stokbarang = "INSERT INTO tabelstokbarang (Id_lokasi, Id_Barang, tglMasuk, saldo) VALUES ('$lokasi', '$kodeBarang', '$tgl_Input', '$saldo_transaksi')";
+        $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
+    }
+
+    if($query_stokbarang && $query_update){
+        $lastId = $query_stokbarang['Id'];
+    }elseif($query_stokbarang){
+        $lastId = mysqli_insert_id($conn);
+    }
+
+    if ($lastId) {
+        $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
         $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
 
         if ($query_transaksihistory) {
@@ -64,7 +79,7 @@ if ($var == "TAMBAH") {
     //saldo 100
     //saldo 50
     while ($saldo_transaksi > 0) {
-          
+
         //mengurangi stok barang berdasarkan index
         if ($stokbarang[$i]['saldo'] >= $saldo_transaksi) {
             //untuk mengetahui id yang mana
@@ -85,10 +100,8 @@ if ($var == "TAMBAH") {
             $i++;
         }
     }
-    
+
     echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
 }
 
 mysqli_close($conn);
-
-?>

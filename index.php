@@ -163,7 +163,7 @@ include 'connection.php';
                             <td scope="row"><?php echo $row['lokasi']; ?></td>
                             <td scope="row"><?php echo $row['kodeBarang']; ?></td>
                             <td scope="row"><?php echo $row['namaBarang']; ?></td>
-                            <td scope="row"><?php echo $row['saldo']!='0'; ?></td>
+                            <td scope="row"><?php echo $row['saldo']; ?></td>
                             <td scope="row"><?php echo $row['tglMasuk']; ?></td>
                         </tr>
                     <?php }

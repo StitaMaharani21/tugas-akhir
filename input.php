@@ -10,6 +10,11 @@ include 'connection.php';
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.css" rel="stylesheet" />
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js">
+    </script>
 </head>
 
 <body>
@@ -69,7 +74,7 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
-                    <input type="date" class="form-control" id="tanggalInput" name="tgl_Input" value="<?php echo date('Y-m-d') ?>">
+                    <input type="date" class="form-control date-form" id="tanggalInput" name="tgl_Input">
                 </div>
                 <div class="mb-3">
                     <label for="saldo" class="form-label">Quantity</label>
@@ -142,6 +147,10 @@ include 'connection.php';
             }
         <?php } ?>
     });
+
+    // $('.date-form').datepicker({
+    //     format: 'dd/mm/yyyy',
+    // });
 </script>
 
 </html>
