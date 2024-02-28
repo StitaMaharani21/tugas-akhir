@@ -64,6 +64,7 @@ if ($var == "TAMBAH") {
     //saldo 100
     //saldo 50
     while ($saldo_transaksi > 0) {
+          
         //mengurangi stok barang berdasarkan index
         if ($stokbarang[$i]['saldo'] >= $saldo_transaksi) {
             //untuk mengetahui id yang mana
@@ -84,10 +85,7 @@ if ($var == "TAMBAH") {
             $i++;
         }
     }
-    if ($saldo_transaksi > 0) {
-        echo "<script>alert('Saldo barang tidak mencukupi!'); window.location.href='index.php';</script>";
-        exit;
-    }
+    
     echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
 }
 

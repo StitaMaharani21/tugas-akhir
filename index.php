@@ -152,6 +152,7 @@ include 'connection.php';
                     $sql = "SELECT * FROM tabelstokbarang 
                     INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
                     INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
+                    WHERE saldo > 0
                     ORDER BY tglMasuk, tabelstokbarang.Id ASC
                     ";
 
@@ -162,7 +163,7 @@ include 'connection.php';
                             <td scope="row"><?php echo $row['lokasi']; ?></td>
                             <td scope="row"><?php echo $row['kodeBarang']; ?></td>
                             <td scope="row"><?php echo $row['namaBarang']; ?></td>
-                            <td scope="row"><?php echo $row['saldo']; ?></td>
+                            <td scope="row"><?php echo $row['saldo']!='0'; ?></td>
                             <td scope="row"><?php echo $row['tglMasuk']; ?></td>
                         </tr>
                     <?php }
