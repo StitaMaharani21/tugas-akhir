@@ -76,7 +76,7 @@ include 'connection.php';
                     <input type="number" class="form-control" id="saldo" name="saldo_transaksi" value="<?php echo $saldo ?>">
                 </div>
                 <div class="col mt-5px">
-                    <button type="submit" class="btn btn-primary">Posting</button>
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Tambahkan Data?')">Posting</button>
                     <a href="index.php" class="btn btn-primary">Exit</a>
                 </div>
             </form>
