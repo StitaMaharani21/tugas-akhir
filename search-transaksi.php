@@ -25,12 +25,12 @@ include 'connection.php';
                     <select class="form-select" aria-label="Default select example" id="bukti" name="bukti">
                         <option value="" selected>Select Bukti</option>
                         <?php
-                        $sqlbukti = "SELECT * FROM transaksihistory
-                        INNER JOIN tabelstokbarang ON transaksihistory.Id_Stok = tabelstokbarang.id
+                        $sqlbukti = "SELECT * FROM transaksi
+                        INNER JOIN tabelstokbarang ON transaksi.Id_Stok = tabelstokbarang.id
                         INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
                         INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                        INNER JOIN masterprogram ON transaksihistory.Id_Program = masterprogram.Id
-                        INNER JOIN masteruser ON transaksihistory.Id_User = masteruser.Id";
+                        INNER JOIN masterprogram ON transaksi.Id_Program = masterprogram.Id
+                        INNER JOIN masteruser ON transaksi.Id_User = masteruser.Id";
                         $qbukti = mysqli_query($conn, $sqlbukti);
                         while ($rowbukti = mysqli_fetch_assoc($qbukti)) {
                         ?>
@@ -112,12 +112,12 @@ include 'connection.php';
                         $bukti = $_POST['bukti'];
                         $tgl_Input = $_POST['tgl_Input'];
 
-                        $sql = "SELECT * FROM transaksihistory
-                    INNER JOIN tabelstokbarang ON transaksihistory.Id_Stok = tabelstokbarang.id
+                        $sql = "SELECT * FROM transaksi
+                    INNER JOIN tabelstokbarang ON transaksi.Id_Stok = tabelstokbarang.id
                     INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
                     INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    INNER JOIN masterprogram ON transaksihistory.Id_Program = masterprogram.Id
-                    INNER JOIN masteruser ON transaksihistory.Id_User = masteruser.Id
+                    INNER JOIN masterprogram ON transaksi.Id_Program = masterprogram.Id
+                    INNER JOIN masteruser ON transaksi.Id_User = masteruser.Id
                     
                     ";
 
