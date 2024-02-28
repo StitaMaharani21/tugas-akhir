@@ -21,29 +21,52 @@ $user = 1;
 $sql_validasi = "SELECT tglMasuk FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' ORDER BY tglMasuk DESC LIMIT 1";
 $result_validasi = mysqli_query($conn, $sql_validasi);
 $row_validasi = mysqli_fetch_assoc($result_validasi);
-$tanggal_masuk = $row_validasi['tglMasuk'];
-
-if ($tgl_Input < $tanggal_masuk) {
-    echo "<script>alert('Tanggal transaksi tidak boleh lebih kecil dari tanggal masuk terakhir.'); window.location.href='index.php';</script>";
-    exit;
+if ($row_validasi != null) {
+    $tanggal_masuk = $row_validasi['tglMasuk'];
+    if ($tgl_Input < $tanggal_masuk) {
+        echo "<script>alert('Tanggal transaksi tidak boleh lebih kecil dari tanggal masuk terakhir.'); window.location.href='index.php';</script>";
+        exit;
+    }
 }
 
 $var = substr($bukti, 0, 6);
 $int = substr($bukti, 6);
 
 if ($var == "TAMBAH") {
-    $sql_stokbarang = "SELECT * FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' AND tglMasuk = '$tgl_input' ORDER BY tglMasuk ASC";
+    // check if there is any stock in the table with the same location, item, and date
+    $sql_stokbarang = "SELECT * FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' AND tglMasuk = '$tgl_Input' ORDER BY tglMasuk ASC";
     $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
 
-    if ($query_stokbarang) {
-        $result_stokbarang = mysqli_fetch_assoc($query_stokbarang);
-        echo print_r($result_stokbarang);
-        // $sql_update = "UPDATE tabelstokbarang SET saldo = saldo + $saldo_transaksi WHERE Id = " . $result_stokbarang['Id'];
-        // $query_update = mysqli_query($conn, $sql_update);
-    } else {
-        echo $sql_stokbarang = "INSERT INTO tabelstokbarang (Id_lokasi, Id_Barang, tglMasuk, saldo) VALUES ('$lokasi', '$kodeBarang', '$tgl_Input', '$saldo_transaksi')";
+    // if there is no stock with the same location, item, and date, then insert a new stock
+    if (mysqli_num_rows($query_stokbarang) == 0) {
+        $sql_stokbarang = "INSERT INTO tabelstokbarang (Id_lokasi, Id_Barang, tglMasuk, saldo) VALUES ('$lokasi', '$kodeBarang', '$tgl_Input', '$saldo_transaksi')";
         $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
+
+        if ($query_stokbarang) {
+            $lastId = mysqli_insert_id($conn);
+        } else {
+            echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
+            exit;
+        }
+    } else {
+        // if there is a stock with the same location, item, and date, then update the stock
+        $row_stokbarang = mysqli_fetch_assoc($query_stokbarang);
+        $sql_stokbarang = "UPDATE tabelstokbarang SET saldo = saldo + $saldo_transaksi WHERE Id = " . $row_stokbarang['Id'];
+        $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
+
+        if ($query_stokbarang) {
+            $lastId = $row_stokbarang['Id'];
+        } else {
+            echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
+            exit;
     }
+    }
+
+    if($query_stokbarang && $query_update){
+        $lastId = $query_stokbarang['Id'];
+    }elseif($query_stokbarang){
+        $lastId = mysqli_insert_id($conn);
+        }
 
     if($query_stokbarang && $query_update){
         $lastId = $query_stokbarang['Id'];
@@ -51,18 +74,16 @@ if ($var == "TAMBAH") {
         $lastId = mysqli_insert_id($conn);
     }
 
-    if ($lastId) {
-        $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
-        $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
+    // insert the transaction history
+    $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
+    $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
 
-        if ($query_transaksihistory) {
-            echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
-        } else {
-            echo "<script>alert('Gagal menambahkan data transaksihistory!'); window.location.href='index.php';</script>";
-        }
+    if ($query_transaksihistory) {
+        echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
     } else {
-        echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
+        echo "<script>alert('Gagal menambahkan data transaksihistory!'); window.location.href='index.php';</script>";
     }
+
 } else if ($var == "KURANG") {
     $sql_stokbarang = "SELECT * FROM tabelstokbarang WHERE saldo > 0 AND Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' ORDER BY tglMasuk ASC";
     $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
