@@ -152,7 +152,7 @@ include 'connection.php';
                     $sql = "SELECT * FROM tabelstokbarang 
                     INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
                     INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    ORDER BY kodeBarang, tglMasuk ASC, tabelstokbarang.Id ASC
+                    ORDER BY tglMasuk, tabelstokbarang.Id ASC
                     ";
 
                     $query = mysqli_query($conn, $sql);

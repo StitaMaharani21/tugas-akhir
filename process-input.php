@@ -14,12 +14,9 @@ if ($_POST['program'] == null || $_POST['bukti'] == null || $_POST['lokasi'] == 
     exit;
 }
 
-
 date_default_timezone_set('Asia/Jakarta');
 $jamInput = date('H:i:s');
 $user = 1;
-
-
 
 $sql_validasi = "SELECT tglMasuk FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' ORDER BY tglMasuk DESC LIMIT 1";
 $result_validasi = mysqli_query($conn, $sql_validasi);
@@ -81,7 +78,6 @@ if ($var == "TAMBAH") {
             $saldo_transaksi -= $stokbarang[$i]['saldo'];
             $sql_stokbarang = "UPDATE tabelstokbarang SET saldo = 0 WHERE Id = " . $stokbarang[$i]['Id'];
             $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
-            //barang yang dikurang sebelumnya
             $insertId = $stokbarang[$i]['Id'];
             $sql_transaksihistory = "INSERT INTO transaksihistory (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}')";
             $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
@@ -96,3 +92,5 @@ if ($var == "TAMBAH") {
 }
 
 mysqli_close($conn);
+
+?>
