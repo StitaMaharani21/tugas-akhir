@@ -148,7 +148,7 @@ if ($var == "TAMBAH") {
             $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}')";
             $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
             //insert ke history(backup table)
-            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}'";
+            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}')";
             $query_history = mysqli_query($conn, $sql_history);
             $i++;
         }

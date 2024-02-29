@@ -1,7 +1,7 @@
 <?php
 include 'connection.php';
 
-$restore = (isset($_POST['restore']))?isset($_POST['restore']):"no";
+$restore = (isset($_POST['restore'])) ? isset($_POST['restore']) : "no";
 
 
 if (isset($_POST['restore']) && $_POST['restore'] == "yes") {
@@ -74,15 +74,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                                                                                                             }
                                                                                                             ?>>Restore</button>
                         </form>
-                        <?php
-                        // if ($rowTransaksi['count'] == $rowHistory['count'] && $restore == "yes") {
-                        //     echo '<button class="btn btn-outline-light" type="button" disabled>Restore</button>';
-                        // } else {
-                        //     echo '<form action="index.php" method="post">';
-                        //     echo '<button class="btn btn-outline-light" type="submit" name="restore" value="yes">Restore</button>';
-                        //     echo '</form>';
-                        // } 
-                        ?>
+
                     </div>
                 </div>
             </div>
@@ -219,7 +211,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
         <div class="card-body">
             <div class="row align-items-center">
                 <div class="col">
-                    <h5 class="ms-2">Master Data</h5>
+                    <h5 class="ms-2">Master Tabel</h5>
                 </div>
             </div>
         </div>
@@ -228,7 +220,17 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
     <!-- untuk master lokasi -->
     <div class="card mx-auto mt-2">
         <div class="card-header">
-            Master Lokasi
+            <h5>Master Lokasi</h5>
+            <form action="master-lokasi.php" method="POST">
+                <div class="row g-3">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Masukan Lokasi" id="lokasi" name="lokasi">
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
@@ -239,7 +241,19 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                     </tr>
                 </thead>
                 <tbody>
+                    <?php
+                    $sql = "SELECT * FROM masterlokasi";
+                    $query = mysqli_query($conn, $sql);
+                    $i = 1;
+                    while ($row = mysqli_fetch_assoc($query)) {
 
+                    ?>
+                        <tr>
+                            <td scope="row"><?php echo $i++ ?></td>
+                            <td scope="row"><?php echo $row['lokasi']; ?></td>
+                        </tr>
+                    <?php }
+                    ?>
 
                 </tbody>
             </table>
@@ -250,7 +264,20 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
     <!-- untuk master barang -->
     <div class="card mx-auto mt-2">
         <div class="card-header">
-            Master Items
+            <h5>Master Barang</h5>
+            <form action="master-barang.php" method="POST">
+                <div class="row g-3">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Masukan Kode Barang" id="kodeBarang" name="kodeBarang">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Masukan Nama Barang" id="namaBarang" name="namaBarang">
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
@@ -262,7 +289,20 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                     </tr>
                 </thead>
                 <tbody>
+                    <?php
+                    $sql = "SELECT * FROM masterbarang";
+                    $query = mysqli_query($conn, $sql);
+                    $i = 1;
+                    while ($row = mysqli_fetch_assoc($query)) {
 
+                    ?>
+                        <tr>
+                            <td scope="row"><?php echo $i++ ?></td>
+                            <td scope="row"><?php echo $row['kodeBarang']; ?></td>
+                            <td scope="row"><?php echo $row['namaBarang']; ?></td>
+                        </tr>
+                    <?php }
+                    ?>
 
                 </tbody>
             </table>
