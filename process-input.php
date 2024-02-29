@@ -47,11 +47,9 @@ $var = substr($bukti, 0, 6);
 $int = substr($bukti, 6);
 
 if ($var == "TAMBAH") {
-    // check if there is any stock in the table with the same location, item, and date
     $sql_stokbarang = "SELECT * FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' AND tglMasuk = '$tgl_Input' ORDER BY tglMasuk ASC";
     $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
 
-    // if there is no stock with the same location, item, and date, then insert a new stock
     if (mysqli_num_rows($query_stokbarang) == 0) {
         $sql_stokbarang = "INSERT INTO tabelstokbarang (Id_lokasi, Id_Barang, tglMasuk, saldo) VALUES ('$lokasi', '$kodeBarang', '$tgl_Input', '$saldo_transaksi')";
         $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
@@ -63,7 +61,6 @@ if ($var == "TAMBAH") {
             exit;
         }
     } else {
-        // if there is a stock with the same location, item, and date, then update the stock
         $row_stokbarang = mysqli_fetch_assoc($query_stokbarang);
         $sql_stokbarang = "UPDATE tabelstokbarang SET saldo = saldo + $saldo_transaksi WHERE Id = " . $row_stokbarang['Id'];
         $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
@@ -88,7 +85,7 @@ if ($var == "TAMBAH") {
     //     $lastId = mysqli_insert_id($conn);
     // }
 
-    // insert the transaction history
+    //langsung insert ke transaksi history
     $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
     $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
 
