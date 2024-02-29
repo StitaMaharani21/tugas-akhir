@@ -11,6 +11,12 @@ include 'connection.php';
     <title>searching data</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+
+    <link type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js">
+    </script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+    </script>
 </head>
 
 <body>
@@ -66,10 +72,10 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
-                    <input type="date" class="form-control" id="tanggalInput" name="tgl_Input" value="">
+                    <input type="" class="form-control date-form" id="txtDate" runat="server" name="tgl_Input">
                 </div>
                 <div class="col mt-5px">
-                <input type="submit" name="cari" value="Search" class="btn btn-primary" />
+                    <input type="submit" name="cari" value="Search" class="btn btn-primary" />
                     <a href="index.php" class="btn btn-primary">Cancel</a>
                 </div>
             </form>
@@ -110,7 +116,8 @@ include 'connection.php';
                         $lokasi = $_POST['lokasi'];
                         $kodeBarang = $_POST['kodeBarang'];
                         $bukti = $_POST['bukti'];
-                        $tgl_Input = $_POST['tgl_Input'];
+                        $convert = DateTime::createFromFormat('d-m-Y', $_POST['tgl_Input']);
+                        $tgl_Input = $convert->format('Y-m-d');
 
                         $sql = "SELECT * FROM transaksi
                     INNER JOIN tabelstokbarang ON transaksi.Id_Stok = tabelstokbarang.id
@@ -127,7 +134,7 @@ include 'connection.php';
                             echo "<script>alert('Silakan Lengkapi Data Form!'); window.location.href='search-transaksi.php';</script>";
                             exit;
                         }
-                        
+
                         $sql .= "ORDER BY jam_Input,tgl_Input  ASC, bukti DESC";
 
 
@@ -137,16 +144,17 @@ include 'connection.php';
                     ?>
                             <tr>
                                 <td scope="row"><?php echo $row['bukti']; ?></td>
-                                <td scope="row"><?php echo $row['tgl_Input']; ?></td>
+                                <td scope="row"><?php echo date('d-m-Y', strtotime($row['tgl_Input'])); ?></td>
                                 <td scope="row"><?php echo $row['jam_Input']; ?></td>
                                 <td scope="row"><?php echo $row['lokasi']; ?></td>
                                 <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                                <td scope="row"><?php echo $row['tglMasuk']; ?></td>
+                                <td scope="row"><?php echo date('d-m-Y', strtotime($row['tglMasuk'])); ?></td>
                                 <td scope="row"><?php echo $row['saldo_transaksi']; ?></td>
                                 <td scope="row"><?php echo $row['program']; ?></td>
                                 <td scope="row"><?php echo $row['User']; ?></td>
                             </tr>
-                    <?php }
+                    <?php
+                        }
                     }
                     ?>
 
@@ -158,5 +166,12 @@ include 'connection.php';
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+<script type="text/javascript">
+    $(function() {
+        $("#txtDate").datepicker({
+            dateFormat: 'dd-mm-yy'
+        });
+    });
+</script>
 
 </html>

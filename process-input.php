@@ -5,8 +5,10 @@ $bukti = $_POST['bukti'];
 $lokasi = $_POST['lokasi'];
 $kodeBarang = $_POST['kodeBarang'];
 $namaBarang = $_POST['namaBarang'];
-$tgl_Input = $_POST['tgl_Input'];
+$convert = DateTime::createFromFormat('d-m-Y', $_POST['tgl_Input']);
+$tgl_Input = $convert->format('Y-m-d');
 $saldo_transaksi = $_POST['saldo_transaksi'];
+
 
 if ($_POST['program'] == null || $_POST['bukti'] == null || $_POST['lokasi'] == null || $_POST['kodeBarang'] == null || $_POST['namaBarang'] == null || $_POST['tgl_Input'] == null || $_POST['saldo_transaksi'] == null) {
 
@@ -89,7 +91,11 @@ if ($var == "TAMBAH") {
     $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
     $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
 
-    if ($query_transaksihistory) {
+    //backup data untuk transakasi
+    $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
+    $query_history = mysqli_query($conn, $sql_history);
+
+    if ($query_transaksihistory && $query_history) {
         echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
     } else {
         echo "<script>alert('Gagal menambahkan data transaksihistory!'); window.location.href='index.php';</script>";
@@ -104,14 +110,14 @@ if ($var == "TAMBAH") {
         $stokbarang[] = $row;
         $total_stokbarang += $row['saldo'];
         //beurutan array nya sesuai tgl masuk
-        //misanya list barangnya aopa
+        //misanya list barangnya apa
         //{saldo ; 10}
         //{saldo}
     }
     $i = 0;
     //saldo 100
     //saldo 50
-    if($saldo_transaksi > $total_stokbarang){
+    if ($saldo_transaksi > $total_stokbarang) {
         echo "<script>alert('Stok Barang Tidak Cukup!'); window.location.href='index.php';</script>";
         mysqli_rollback($conn);
         exit;
@@ -125,8 +131,12 @@ if ($var == "TAMBAH") {
             $sql_stokbarang = "UPDATE tabelstokbarang SET saldo = saldo - $saldo_transaksi WHERE Id = " . $stokbarang[$i]['Id'];
             $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
             $insertId = $stokbarang[$i]['Id'];
+            //insert data ke transaksi
             $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-$saldo_transaksi')";
             $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
+            //insert ke history(backup table)
+            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-$saldo_transaksi')";
+            $query_history = mysqli_query($conn, $sql_history);
             $saldo_transaksi = 0;
         } else {
             //$saldo = saldo transakasi
@@ -134,8 +144,12 @@ if ($var == "TAMBAH") {
             $sql_stokbarang = "UPDATE tabelstokbarang SET saldo = 0 WHERE Id = " . $stokbarang[$i]['Id'];
             $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
             $insertId = $stokbarang[$i]['Id'];
+            //insert data ke transaksi tabel
             $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}')";
             $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
+            //insert ke history(backup table)
+            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}'";
+            $query_history = mysqli_query($conn, $sql_history);
             $i++;
         }
     }

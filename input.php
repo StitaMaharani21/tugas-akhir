@@ -10,9 +10,16 @@ include 'connection.php';
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet" /> -->
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script> -->
+
+
+    <link type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js">
+    </script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+    </script>
 </head>
 
 <body>
@@ -72,7 +79,7 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
-                    <input type="date" class="form-control date-form" id="tanggalInput" name="tgl_Input">
+                    <input type="" class="form-control date-form" id="txtDate" runat="server" name="tgl_Input">
                 </div>
                 <div class="mb-3">
                     <label for="saldo" class="form-label">Quantity</label>
@@ -150,5 +157,13 @@ include 'connection.php';
     //     format: 'dd/mm/yyyy',
     // });
 </script>
+
+<script type="text/javascript"> 
+            $(function () { 
+                $("#txtDate").datepicker({  
+                    dateFormat: 'dd-mm-yy'  
+                }); 
+            }); 
+</script> 
 
 </html>

@@ -88,7 +88,7 @@ include 'connection.php';
                     ";
                     $query = mysqli_query($conn, $sql);
                     while ($row = mysqli_fetch_assoc($query)) {
-                        
+
                     ?>
                         <tr>
                             <td scope="row"><?php echo $row['bukti']; ?></td>
@@ -113,7 +113,7 @@ include 'connection.php';
 
     <div class="card mx-auto mt-5 text-bg-secondary">
         <div class="card-body">
-        <div class="row align-items-center">
+            <div class="row align-items-center">
                 <div class="col">
                     <h5 class="ms-2">Item Stock</h5>
                 </div>
@@ -168,6 +168,62 @@ include 'connection.php';
                         </tr>
                     <?php }
                     ?>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- judul master master -->
+    <div class="card mx-auto mt-5 text-bg-secondary">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="ms-2">Master Data</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- untuk master lokasi -->
+    <div class="card mx-auto mt-2">
+        <div class="card-header">
+            Master Lokasi
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Lokasi</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- untuk master barang -->
+    <div class="card mx-auto mt-2">
+        <div class="card-header">
+            Master Items
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead class="table-primary">
+                    <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Kode Barang</th>
+                        <th scope="col">Nama Barang</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        
 
                 </tbody>
             </table>
