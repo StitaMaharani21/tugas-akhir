@@ -1,6 +1,30 @@
 <?php
 include 'connection.php';
+
+$restore = (isset($_POST['restore']))?isset($_POST['restore']):"no";
+
+
+if (isset($_POST['restore']) && $_POST['restore'] == "yes") {
+    // echo $_POST['restore'];
+
+    $sql_delete = "DELETE FROM transaksi";
+    mysqli_query($conn, $sql_delete);
+
+    $sqlRestore = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi)
+            SELECT Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi FROM history";
+    mysqli_query($conn, $sqlRestore);
+}
+
+$sqlTransaksi = "SELECT COUNT(*) as count FROM transaksi";
+$resultTransaksi = mysqli_query($conn, $sqlTransaksi);
+$rowTransaksi = mysqli_fetch_assoc($resultTransaksi);
+
+$sqlHistory = "SELECT COUNT(*) as count FROM history";
+$resultHistory = mysqli_query($conn, $sqlHistory);
+$rowHistory = mysqli_fetch_assoc($resultHistory);
+
 ?>
+
 
 
 <!DOCTYPE html>
@@ -29,7 +53,6 @@ include 'connection.php';
 
     <h1 class="text-center mt-5">PROGRAM STOK BARANG</h1>
 
-
     <div class="card mx-auto mt-5 text-bg-secondary">
         <div class="card-body">
             <div class="row align-items-center">
@@ -44,6 +67,22 @@ include 'connection.php';
                         <a href="search-transaksi.php">
                             <button class="btn btn-outline-light" type="button">Search Transaction</button>
                         </a>
+                        <form action="index.php" method="post">
+                            <button class="btn btn-outline-light" type="submit" name="restore" value="yes" <?php
+                                                                                                            if ($rowTransaksi['count'] == $rowHistory['count']) {
+                                                                                                                echo "disabled";
+                                                                                                            }
+                                                                                                            ?>>Restore</button>
+                        </form>
+                        <?php
+                        // if ($rowTransaksi['count'] == $rowHistory['count'] && $restore == "yes") {
+                        //     echo '<button class="btn btn-outline-light" type="button" disabled>Restore</button>';
+                        // } else {
+                        //     echo '<form action="index.php" method="post">';
+                        //     echo '<button class="btn btn-outline-light" type="submit" name="restore" value="yes">Restore</button>';
+                        //     echo '</form>';
+                        // } 
+                        ?>
                     </div>
                 </div>
             </div>
@@ -223,7 +262,7 @@ include 'connection.php';
                     </tr>
                 </thead>
                 <tbody>
-                        
+
 
                 </tbody>
             </table>
