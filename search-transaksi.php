@@ -116,8 +116,11 @@ include 'connection.php';
                         $lokasi = $_POST['lokasi'];
                         $kodeBarang = $_POST['kodeBarang'];
                         $bukti = $_POST['bukti'];
-                        $convert = DateTime::createFromFormat('d-m-Y', $_POST['tgl_Input']);
-                        $tgl_Input = $convert->format('Y-m-d');
+                        $tgl_Input = "";
+                        if ($_POST['tgl_Input'] != null) {
+                            $convert = DateTime::createFromFormat('d-m-Y', $_POST['tgl_Input']);
+                            $tgl_Input = $convert->format('Y-m-d');
+                        }
 
                         $sql = "SELECT * FROM transaksi
                     INNER JOIN tabelstokbarang ON transaksi.Id_Stok = tabelstokbarang.id
@@ -130,10 +133,19 @@ include 'connection.php';
 
                         if ($bukti && $kodeBarang && $lokasi && $tgl_Input) {
                             $sql .= "WHERE lokasi LIKE '%$lokasi%' AND kodeBarang LIKE '%$kodeBarang%' AND bukti LIKE '%$bukti%' AND tgl_Input = '{$tgl_Input}' ";
+                        } elseif ($bukti == '' && $kodeBarang == '' && $lokasi == '' && $tgl_Input) {
+                            $sql .= "WHERE tgl_Input = '{$tgl_Input}' ";
+                        } elseif ($bukti == '' && $kodeBarang == '' && $lokasi && $tgl_Input == '') {
+                            $sql .= "WHERE lokasi LIKE '%$lokasi%'";
+                        } elseif ($bukti == '' && $kodeBarang && $lokasi == '' && $tgl_Input == '') {
+                            $sql .= "WHERE kodeBarang LIKE '%$kodeBarang%'";
+                        } elseif ($bukti && $kodeBarang == '' && $lokasi == '' && $tgl_Input == '') {
+                            $sql .= "WHERE bukti LIKE '%$bukti%'";
                         } else {
                             echo "<script>alert('Silakan Lengkapi Data Form!'); window.location.href='search-transaksi.php';</script>";
                             exit;
                         }
+
 
                         $sql .= "ORDER BY jam_Input,tgl_Input  ASC, bukti DESC";
 
