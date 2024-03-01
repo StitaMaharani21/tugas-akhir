@@ -6,8 +6,11 @@ $lokasi = $_POST['lokasi'];
 $kodeBarang = $_POST['kodeBarang'];
 $namaBarang = $_POST['namaBarang'];
 $convert = DateTime::createFromFormat('d-m-Y', $_POST['tgl_Input']);
-$tgl_Input = $convert->format('Y-m-d');
+if($_POST['tgl_Input']!=null){
+    $tgl_Input = $convert->format('Y-m-d');
+}
 $saldo_transaksi = $_POST['saldo_transaksi'];
+
 
 
 if ($_POST['program'] == null || $_POST['bukti'] == null || $_POST['lokasi'] == null || $_POST['kodeBarang'] == null || $_POST['namaBarang'] == null || $_POST['tgl_Input'] == null || $_POST['saldo_transaksi'] == null) {
@@ -33,7 +36,7 @@ if ($row_validasi_bukti != null) {
     exit;
 }
 
-$sql_validasi = "SELECT tglMasuk FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' ORDER BY tglMasuk DESC LIMIT 1";
+$sql_validasi = "SELECT tglMasuk FROM tabelstokbarang ORDER BY tglMasuk DESC LIMIT 1";
 $result_validasi = mysqli_query($conn, $sql_validasi);
 $row_validasi = mysqli_fetch_assoc($result_validasi);
 if ($row_validasi != null) {

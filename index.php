@@ -22,7 +22,6 @@ $rowTransaksi = mysqli_fetch_assoc($resultTransaksi);
 $sqlHistory = "SELECT COUNT(*) as count FROM history";
 $resultHistory = mysqli_query($conn, $sqlHistory);
 $rowHistory = mysqli_fetch_assoc($resultHistory);
-
 ?>
 
 
@@ -57,7 +56,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
         <div class="card-body">
             <div class="row align-items-center">
                 <div class="col">
-                    <h5 class="ms-2">Transaction History</h5>
+                    <h5 class="ms-2">Transaksi Histori</h5>
                 </div>
                 <div class="col">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -146,7 +145,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
         <div class="card-body">
             <div class="row align-items-center">
                 <div class="col">
-                    <h5 class="ms-2">Item Stock</h5>
+                    <h5 class="ms-2">Stok Barang</h5>
                 </div>
                 <div class="col">
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">

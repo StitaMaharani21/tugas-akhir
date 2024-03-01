@@ -79,14 +79,14 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
-                    <input type="" class="form-control date-form" id="txtDate" runat="server" name="tgl_Input">
+                    <input type="" class="form-control date-form" id="txtDate" runat="server" name="tgl_Input" placeholder="dd-mm-yyyy">
                 </div>
                 <div class="mb-3">
                     <label for="saldo" class="form-label">Quantity</label>
                     <input type="number" class="form-control" id="saldo" name="saldo_transaksi" value="<?php echo $saldo ?>">
                 </div>
                 <div class="col mt-5px">
-                    <button type="submit" class="btn btn-primary">Posting</button>
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Posting Data?')">Posting</button>
                     <a href="index.php" class="btn btn-primary">Exit</a>
                 </div>
             </form>
