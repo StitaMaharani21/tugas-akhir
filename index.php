@@ -24,8 +24,6 @@ $resultHistory = mysqli_query($conn, $sqlHistory);
 $rowHistory = mysqli_fetch_assoc($resultHistory);
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,6 +33,16 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet" /> -->
+    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script> -->
+
+
+    <link type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js">
+    </script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+    </script>
 </head>
 
 <style>
@@ -42,13 +50,6 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
 </style>
 
 <body>
-    <!-- <div class="">
-        <h1 class="center">Stok Barang</h1>
-        <ul>
-            <li> <a href="input.php">Maintenance Stok </a></li>
-            <li><a href="#">Stock Items </a></li>
-        </ul>
-    </div> -->
 
     <h1 class="text-center mt-5">PROGRAM STOK BARANG</h1>
 
@@ -66,7 +67,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                         <a href="search-transaksi.php">
                             <button class="btn btn-outline-light" type="button">Search Transaction</button>
                         </a>
-                        <form action="index.php" method="post">
+                        <form action="restore.php" method="post">
                             <button class="btn btn-outline-light" type="submit" name="restore" value="yes" <?php
                                                                                                             if ($rowTransaksi['count'] == $rowHistory['count']) {
                                                                                                                 echo "disabled";
@@ -85,22 +86,9 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
     <div class="card mx-auto mt-2">
         <div class="card">
             <div class="container">
-                <!-- <form action="/search" method="get" class=" form-label search-form">
-                    <input type="search" name="" placeholder="Search...">
-                    <button type="submit" class="btn btn-primary ms-2">Search</button>
-                </form> -->
             </div>
         </div>
         <div class="card-body">
-            <!-- <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav> -->
             <table class="table table-bordered">
                 <thead class="table-primary">
                     <tr>
@@ -115,33 +103,8 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                         <th scope="col">User</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php
-                    $sql = "SELECT * FROM transaksi
-                    INNER JOIN tabelstokbarang ON transaksi.Id_Stok = tabelstokbarang.id
-                    INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
-                    INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    INNER JOIN masterprogram ON transaksi.Id_Program = masterprogram.Id
-                    INNER JOIN masteruser ON transaksi.Id_User = masteruser.Id
-                    ORDER BY jam_Input,tgl_Input  ASC, bukti DESC
-                    ";
-                    $query = mysqli_query($conn, $sql);
-                    while ($row = mysqli_fetch_assoc($query)) {
+                <tbody id="tabel_transaksi">
 
-                    ?>
-                        <tr>
-                            <td scope="row"><?php echo $row['bukti']; ?></td>
-                            <td scope="row"><?php echo date('d-m-Y', strtotime($row['tgl_Input'])); ?></td>
-                            <td scope="row"><?php echo $row['jam_Input']; ?></td>
-                            <td scope="row"><?php echo $row['lokasi']; ?></td>
-                            <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                            <td scope="row"><?php echo date('d-m-Y', strtotime($row['tglMasuk'])); ?></td>
-                            <td scope="row"><?php echo $row['saldo_transaksi']; ?></td>
-                            <td scope="row"><?php echo $row['program']; ?></td>
-                            <td scope="row"><?php echo $row['User']; ?></td>
-                        </tr>
-                    <?php }
-                    ?>
                 </tbody>
             </table>
         </div>
@@ -170,9 +133,6 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
     <div class="card mx-auto mt-2">
         <div class="card">
             <div class="container">
-                <!-- <a href="search-stock.php">
-                    <button type="button" class="btn btn-primary mb-2 mt-2">Search Data</button>
-                </a> -->
             </div>
         </div>
         <div class="card-body">
@@ -186,28 +146,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                         <th scope="col">Tanggal Masuk</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php
-                    $sql = "SELECT * FROM tabelstokbarang 
-                    INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
-                    INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    WHERE saldo > 0
-                    ORDER BY tglMasuk, tabelstokbarang.Id ASC
-                    ";
-
-                    $query = mysqli_query($conn, $sql);
-                    while ($row = mysqli_fetch_assoc($query)) {
-                    ?>
-                        <tr>
-                            <td scope="row"><?php echo $row['lokasi']; ?></td>
-                            <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                            <td scope="row"><?php echo $row['namaBarang']; ?></td>
-                            <td scope="row"><?php echo $row['saldo']; ?></td>
-                            <td scope="row"><?php echo date('d-m-Y', strtotime($row['tglMasuk'])); ?></td>
-                        </tr>
-                    <?php }
-                    ?>
-
+                <tbody id="tabel_stok">
                 </tbody>
             </table>
         </div>
@@ -229,13 +168,13 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
     <div class="card mx-auto mt-2">
         <div class="card-header">
             <h5>Master Lokasi</h5>
-            <form action="master-lokasi.php" method="POST">
+            <form id="form-lokasi">
                 <div class="row g-3">
                     <div class="col">
                         <input type="text" class="form-control" placeholder="Masukan Lokasi" id="lokasi" name="lokasi">
                     </div>
                     <div class="col">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" id="submit-lokasi" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
             </form>
@@ -248,20 +187,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                         <th scope="col">Lokasi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php
-                    $sql = "SELECT * FROM masterlokasi";
-                    $query = mysqli_query($conn, $sql);
-                    $i = 1;
-                    while ($row = mysqli_fetch_assoc($query)) {
-
-                    ?>
-                        <tr>
-                            <td scope="row"><?php echo $i++ ?></td>
-                            <td scope="row"><?php echo $row['lokasi']; ?></td>
-                        </tr>
-                    <?php }
-                    ?>
+                <tbody id="tabel_lokasi">
 
                 </tbody>
             </table>
@@ -273,7 +199,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
     <div class="card mx-auto mt-2">
         <div class="card-header">
             <h5>Master Barang</h5>
-            <form action="master-barang.php" method="POST">
+            <form id="form-barang">
                 <div class="row g-3">
                     <div class="col">
                         <input type="text" class="form-control" placeholder="Masukan Kode Barang" id="kodeBarang" name="kodeBarang">
@@ -282,7 +208,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                         <input type="text" class="form-control" placeholder="Masukan Nama Barang" id="namaBarang" name="namaBarang">
                     </div>
                     <div class="col">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" id= "submit-barang" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
             </form>
@@ -296,28 +222,110 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                         <th scope="col">Nama Barang</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php
-                    $sql = "SELECT * FROM masterbarang";
-                    $query = mysqli_query($conn, $sql);
-                    $i = 1;
-                    while ($row = mysqli_fetch_assoc($query)) {
-
-                    ?>
-                        <tr>
-                            <td scope="row"><?php echo $i++ ?></td>
-                            <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                            <td scope="row"><?php echo $row['namaBarang']; ?></td>
-                        </tr>
-                    <?php }
-                    ?>
+                <tbody id="tabel_barang">
 
                 </tbody>
             </table>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function() {
+        tabel_transaksi();
+        tabel_stok();
+        tabel_lokasi();
+        tabel_barang();
+    });
+
+    function tabel_transaksi() {
+        $.ajax({
+            url: 'tabelTransaksi.php',
+            type: 'GET',
+            success: function(data) {
+                $('#tabel_transaksi').html(data);
+            }
+        });
+    }
+
+    function tabel_stok() {
+        $.ajax({
+            url: 'tabelStok.php',
+            type: 'GET',
+            success: function(data) {
+                $('#tabel_stok').html(data);
+            }
+        });
+    }
+
+    function tabel_lokasi() {
+        $.ajax({
+            url: 'tabelLokasi.php',
+            type: 'GET',
+            success: function(data) {
+                $('#tabel_lokasi').html(data);
+            }
+        });
+    }
+
+    function tabel_barang() {
+        $.ajax({
+            url: 'tabelBarang.php',
+            type: 'GET',
+            success: function(data) {
+                $('#tabel_barang').html(data);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('#submit-lokasi').click(function(e) {
+            e.preventDefault();
+
+            var lokasi = $('#lokasi').val();
+            $.ajax({
+                type: 'POST',
+                url: "master-lokasi.php",
+                data: $('#form-lokasi').serialize(),
+                success: function(response) {
+                    response = JSON.parse(response);
+                    if (response.status === 'error') {
+                        alert('Error: ' + response.message);
+                    } else {
+                        alert('Data berhasil disimpan!');
+                        window.location.reload();
+                    }
+                }
+            });
+        });
+    });
+
+
+    $(document).ready(function() {
+        $('#submit-barang').click(function(e) {
+            e.preventDefault();
+
+            var kodeBarang = $('#kodeBarang').val();
+            var namaBarang = $('#namaBarang').val();
+
+            $.ajax({
+                type: 'POST',
+                url: "master-barang.php",
+                data: $('#form-barang').serialize(),
+                success: function(response) {
+                    response = JSON.parse(response);
+                    if (response.status === 'error') {
+                        alert('Error: ' + response.message);
+                    } else {
+                        alert('Data berhasil disimpan!');
+                        window.location.reload();
+                    }
+                }
+            });
+        });
+    });
+</script>
+
 
 </html>

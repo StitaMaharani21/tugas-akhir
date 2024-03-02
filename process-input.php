@@ -1,26 +1,28 @@
 <?php
 include 'connection.php';
 $program = $_POST['program'];
-$bukti = $_POST['bukti'];
+// $bukti = $_POST['bukti'];
 $lokasi = $_POST['lokasi'];
 $kodeBarang = $_POST['kodeBarang'];
 $namaBarang = $_POST['namaBarang'];
 $convert = DateTime::createFromFormat('d-m-Y', $_POST['tgl_Input']);
-if($_POST['tgl_Input']!=null){
+if ($_POST['tgl_Input'] != null) {
     $tgl_Input = $convert->format('Y-m-d');
 }
 $saldo_transaksi = $_POST['saldo_transaksi'];
 
 
 
-if ($_POST['program'] == null || $_POST['bukti'] == null || $_POST['lokasi'] == null || $_POST['kodeBarang'] == null || $_POST['namaBarang'] == null || $_POST['tgl_Input'] == null || $_POST['saldo_transaksi'] == null) {
+if ($_POST['program'] == null || $_POST['lokasi'] == null || $_POST['kodeBarang'] == null || $_POST['namaBarang'] == null || $_POST['tgl_Input'] == null || $_POST['saldo_transaksi'] == null) {
 
-    echo "<script>alert('Silakan Isi Form yang Kosong!'); window.location.href='input.php';</script>";
+    $response = ['status' => 'error', 'message' => 'Silakan Isi Form yang Kosong!'];
+    echo json_encode($response);
     exit;
 }
 
 if (!preg_match('/^[0-9]+$/', $_POST['saldo_transaksi'])) {
-    echo "<script>alert('Saldo Transaksi tidak boleh berisi karakter spesial!'); window.location.href='input.php';</script>";
+    $response = ['status' => 'error', 'message' => 'Saldo Transaksi tidak boleh berisi karakter spesial!'];
+    echo json_encode($response);
     exit;
 }
 
@@ -28,13 +30,13 @@ date_default_timezone_set('Asia/Jakarta');
 $jamInput = date('H:i:s');
 $user = 1;
 
-$sql_validasi_bukti = "SELECT bukti FROM transaksi WHERE bukti = '$bukti'";
-$result_validasi_bukti = mysqli_query($conn, $sql_validasi_bukti);
-$row_validasi_bukti = mysqli_fetch_assoc($result_validasi_bukti);
-if ($row_validasi_bukti != null) {
-    echo "<script>alert('Bukti sudah ada!'); window.location.href='index.php';</script>";
-    exit;
-}
+// $sql_validasi_bukti = "SELECT bukti FROM transaksi WHERE bukti = '$bukti'";
+// $result_validasi_bukti = mysqli_query($conn, $sql_validasi_bukti);
+// $row_validasi_bukti = mysqli_fetch_assoc($result_validasi_bukti);
+// if ($row_validasi_bukti != null) {
+//     echo "<script>alert('Bukti sudah ada!'); window.location.href='index.php';</script>";
+//     exit;
+// }
 
 $sql_validasi = "SELECT tglMasuk FROM tabelstokbarang ORDER BY tglMasuk DESC LIMIT 1";
 $result_validasi = mysqli_query($conn, $sql_validasi);
@@ -48,10 +50,10 @@ if ($row_validasi != null) {
     }
 }
 
-$var = substr($bukti, 0, 6);
-$int = substr($bukti, 6);
+// $var = substr($bukti, 0, 6);
+// $int = substr($bukti, 6);
 
-if ($var == "TAMBAH") {
+if ($program == 1) {
     $sql_stokbarang = "SELECT * FROM tabelstokbarang WHERE Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' AND tglMasuk = '$tgl_Input' ORDER BY tglMasuk ASC";
     $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
 
@@ -78,24 +80,29 @@ if ($var == "TAMBAH") {
         }
     }
 
-    // if ($query_stokbarang && $query_update) {
-    //     $lastId = $query_stokbarang['Id'];
-    // } elseif ($query_stokbarang) {
-    //     $lastId = mysqli_insert_id($conn);
-    // }
 
-    // if ($query_stokbarang && $query_update) {
-    //     $lastId = $query_stokbarang['Id'];
-    // } elseif ($query_stokbarang) {
-    //     $lastId = mysqli_insert_id($conn);
-    // }
+    //buat generate bukti
+    $sql = "SELECT * FROM transaksi WHERE bukti LIKE 'TAMBAH%' ORDER BY bukti DESC";
+    $q = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($q) == 0) {
+        $kodeBukti = 'TAMBAH01';
+    } else {
+        $row = mysqli_fetch_assoc($q);
+        $jumlah = substr($row['bukti'], 6);
+        // jika kurang lebih dari 9 maka bukti akan diisi dengan KURANG
+        if ($jumlah > 8) {
+            $kodeBukti = 'TAMBAH' . ($jumlah + 1);
+        } else {
+            $kodeBukti =  'TAMBAH0' . ($jumlah + 1);
+        }
+    }
 
     //langsung insert ke transaksi history
-    $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
+    $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '$saldo_transaksi')";
     $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
 
     //backup data untuk transakasi
-    $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '$saldo_transaksi')";
+    $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '$saldo_transaksi')";
     $query_history = mysqli_query($conn, $sql_history);
 
     if ($query_transaksihistory && $query_history) {
@@ -103,7 +110,25 @@ if ($var == "TAMBAH") {
     } else {
         echo "<script>alert('Gagal menambahkan data transaksihistory!'); window.location.href='index.php';</script>";
     }
-} else if ($var == "KURANG") {
+} else if ($program == 2) {
+    
+    $sql = "SELECT * FROM transaksi WHERE bukti LIKE 'KURANG%' ORDER BY bukti DESC";
+    // hitung berapa jumlah bukti yang berisi awalan KURANG
+    $q = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($q) == 0) {
+        $kodeBukti = 'KURANG01';
+    } else {
+        $row = mysqli_fetch_assoc($q);
+        $jumlah = substr($row['bukti'], 6);
+        // jika kurang lebih dari 9 maka bukti akan diisi dengan KURANG
+        if ($jumlah > 8) {
+            $kodeBukti = 'KURANG' . ($jumlah + 1);
+        } else {
+            $kodeBukti = 'KURANG0' . ($jumlah + 1);
+        }
+    }
+
+
     $sql_stokbarang = "SELECT * FROM tabelstokbarang WHERE saldo > 0 AND Id_lokasi = '$lokasi' AND Id_Barang = '$kodeBarang' ORDER BY tglMasuk ASC";
     $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
     //menghitung stok saat ini dari tabelstokbarang berdasarkan array
@@ -135,10 +160,10 @@ if ($var == "TAMBAH") {
             $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
             $insertId = $stokbarang[$i]['Id'];
             //insert data ke transaksi
-            $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-$saldo_transaksi')";
+            $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-$saldo_transaksi')";
             $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
             //insert ke history(backup table)
-            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-$saldo_transaksi')";
+            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-$saldo_transaksi')";
             $query_history = mysqli_query($conn, $sql_history);
             $saldo_transaksi = 0;
         } else {
@@ -148,16 +173,17 @@ if ($var == "TAMBAH") {
             $query_stokbarang = mysqli_query($conn, $sql_stokbarang);
             $insertId = $stokbarang[$i]['Id'];
             //insert data ke transaksi tabel
-            $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}')";
+            $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-{$stokbarang[$i]['saldo']}')";
             $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
             //insert ke history(backup table)
-            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$bukti', '-{$stokbarang[$i]['saldo']}')";
+            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-{$stokbarang[$i]['saldo']}')";
             $query_history = mysqli_query($conn, $sql_history);
             $i++;
         }
     }
 
-    echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
+    $response = ['status' => 'success', 'message' => 'Data berhasil ditambahkan!'];
+    echo json_encode($response);
 }
 
 mysqli_close($conn);

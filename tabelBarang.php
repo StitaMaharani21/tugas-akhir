@@ -1,0 +1,15 @@
+<?php
+include 'connection.php';
+$sql = "SELECT * FROM masterbarang";
+$query = mysqli_query($conn, $sql);
+$i = 1;
+while ($row = mysqli_fetch_assoc($query)) {
+
+?>
+    <tr>
+        <td scope="row"><?php echo $i++ ?></td>
+        <td scope="row"><?php echo $row['kodeBarang']; ?></td>
+        <td scope="row"><?php echo $row['namaBarang']; ?></td>
+    </tr>
+<?php }
+?>

@@ -1,11 +1,11 @@
-<?php 
+<?php
 include 'connection.php';
 $kodeBarang = strtoupper(trim($_POST['kodeBarang']));
 $namaBarang = strtoupper(trim($_POST['namaBarang']));
 
 if ($_POST['kodeBarang'] == null || $_POST['namaBarang'] == null) {
-
-    echo "<script>alert('Silakan Isi Form yang Kosong!'); window.location.href='index.php';</script>";
+    $response = ['status' => 'error', 'message' => 'Kode Barang atau Nama Barang Tidak Boleh Kosong!'];
+    echo json_encode($response);
     exit;
 }
 
@@ -18,7 +18,8 @@ $sql_validasi_barang = "SELECT kodeBarang, namaBarang FROM masterbarang WHERE ko
 $result_validasi_barang = mysqli_query($conn, $sql_validasi_barang);
 $row_validasi_barang = mysqli_fetch_assoc($result_validasi_barang);
 if ($row_validasi_barang != null) {
-    echo "<script>alert('Kode dan nama barang sudah ada!'); window.location.href='index.php';</script>";
+    $response = ['status' => 'error', 'message' => 'Kode Barang dan Nama Barang Sudah Ada!'];
+    echo json_encode($response);
     exit;
 }
 
@@ -26,10 +27,10 @@ if ($row_validasi_barang != null) {
 $sql_barang = "INSERT INTO masterbarang (kodeBarang, namaBarang) VALUES ('$kodeBarang', '$namaBarang')";
 $query_barang = mysqli_query($conn, $sql_barang);
 
-if($query_barang){
-    echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
+if ($query_barang) {
+    $response = ['status' => 'success', 'message' => 'Data berhasil ditambahkan!'];
+    echo json_encode($response);
 } else {
-    echo "<script>alert('Gagal menambahkan data barang!'); window.location.href='index.php';</script>";
+    $response = ['status' => 'error', 'message' => 'Gagal menambahkan data barang!'];
+    echo json_encode($response);
 }
-
-?>

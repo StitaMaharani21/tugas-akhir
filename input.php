@@ -28,7 +28,7 @@ include 'connection.php';
             Maintenance Stok
         </div>
         <div class="card-body">
-            <form action="process-input.php" method="POST">
+            <form id="form-input">
                 <div class="mb-3">
                     <label for="program" class="form-label">Jenis Transaksi</label>
                     <select class="form-select" aria-label="Default select example" id="program" name="program">
@@ -41,11 +41,6 @@ include 'connection.php';
                             <option value="<?php echo $rowprog['Id']; ?>"><?php echo $rowprog['program']; ?></option>
                         <?php } ?>
                     </select>
-                </div>
-                <div class="mb-3">
-                    <label for="bukti" class="form-label">Bukti</label>
-                    <input type="text" class="form-control" id="bukti" name="bukti" readonly value="">
-
                 </div>
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
@@ -86,84 +81,69 @@ include 'connection.php';
                     <input type="number" class="form-control" id="saldo" name="saldo_transaksi" value="<?php echo $saldo ?>">
                 </div>
                 <div class="col mt-5px">
-                    <button type="submit" class="btn btn-primary" onclick="return confirm('Posting Data?')">Posting</button>
+                    <button type="submit" class="btn btn-primary" id="submit" onclick="return confirm('Posting Data?')">Posting</button>
                     <a href="index.php" class="btn btn-primary">Exit</a>
                 </div>
             </form>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</body>
 
-<script type="text/javascript">
-    document.getElementById('program').addEventListener('change', function() {
-        var program = document.getElementById('program').value;
-        var bukti = document.getElementById('bukti');
-        if (program == 1) {
-            bukti.value = <?php
-                            $sql = "SELECT * FROM transaksi WHERE bukti LIKE 'TAMBAH%' ORDER BY bukti DESC";
-                            $q = mysqli_query($conn, $sql);
-                            if (mysqli_num_rows($q) == 0) {
-                                echo '"TAMBAH01"';
-                            } else {
-                                $row = mysqli_fetch_assoc($q);
-                                $jumlah = substr($row['bukti'], 6);
-                                // jika kurang lebih dari 9 maka bukti akan diisi dengan KURANG
-                                if ($jumlah > 8) {
-                                    echo '"TAMBAH' . ($jumlah + 1) . '"';
-                                } else {
-                                    echo '"TAMBAH0' . ($jumlah + 1) . '"';
-                                }
-                            }
-                            ?>;
-        } else {
-            bukti.value = <?php
-                            // hanya mencari yang ada kata kurang
-                            $sql = "SELECT * FROM transaksi WHERE bukti LIKE 'KURANG%' ORDER BY bukti DESC";
-                            // hitung berapa jumlah bukti yang berisi awalan KURANG
-                            $q = mysqli_query($conn, $sql);
-                            if (mysqli_num_rows($q) == 0) {
-                                echo '"KURANG01"';
-                            } else {
-                                $row = mysqli_fetch_assoc($q);
-                                $jumlah = substr($row['bukti'], 6);
-                                // jika kurang lebih dari 9 maka bukti akan diisi dengan KURANG
-                                if ($jumlah > 8) {
-                                    echo '"KURANG' . ($jumlah + 1) . '"';
-                                } else {
-                                    echo '"KURANG0' . ($jumlah + 1) . '"';
-                                }
-                            }
+    <!-- get nama barang -->
+    <script type="text/javascript">
+        document.getElementById('kodeBarang').addEventListener('change', function() {
+            var kodeBarang = document.getElementById('kodeBarang').value;
+            var namaBarang = document.getElementById('namaBarang');
+            <?php
+            $sql = "SELECT * FROM masterbarang";
+            $q = mysqli_query($conn, $sql);
+            while ($row = mysqli_fetch_assoc($q)) {
+            ?>
+                if (kodeBarang == <?php echo $row['Id']; ?>) {
+                    namaBarang.value = "<?php echo $row['namaBarang']; ?>";
+                }
+            <?php } ?>
+        });
+    </script>
 
-                            ?>;
-        }
-    });
+    <!-- date d-m-y -->
+    <script type="text/javascript">
+        $(function() {
+            $("#txtDate").datepicker({
+                dateFormat: 'dd-mm-yy'
+            });
+        });
+    </script>
 
-    document.getElementById('kodeBarang').addEventListener('change', function() {
-        var kodeBarang = document.getElementById('kodeBarang').value;
-        var namaBarang = document.getElementById('namaBarang');
-        <?php
-        $sql = "SELECT * FROM masterbarang";
-        $q = mysqli_query($conn, $sql);
-        while ($row = mysqli_fetch_assoc($q)) {
-        ?>
-            if (kodeBarang == <?php echo $row['Id']; ?>) {
-                namaBarang.value = "<?php echo $row['namaBarang']; ?>";
-            }
-        <?php } ?>
-    });
 
-    // $('.date-form').datepicker({
-    //     format: 'dd/mm/yyyy',
-    // });
-</script>
+    <!-- insert form ajax-->
+    <script>
+        $(document).ready(function() {
+            $('#submit').click(function(e) {
+                e.preventDefault();
 
-<script type="text/javascript"> 
-            $(function () { 
-                $("#txtDate").datepicker({  
-                    dateFormat: 'dd-mm-yy'  
-                }); 
-            }); 
-</script> 
+                var program = $('#program').val();
+                var lokasi = $('#lokasi').val();
+                var kodeBarang = $('#kodeBarang').val();
+                var tgl_Input = $('#txtDate').val();
+                var saldo = $('#saldo').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "process-input.php",
+                    data: $('#form-input').serialize(),
+                    success: function(response) {
+                        response = JSON.parse(response);
+                        if (response.status === 'error') {
+                            alert('Error: ' + response.message);
+                        } else {
+                            window.location.href = 'index.php';
+                            alert('Data berhasil disimpan! Kembali ke halaman utama.');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 
 </html>
