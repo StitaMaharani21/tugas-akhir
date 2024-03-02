@@ -74,7 +74,7 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
-                    <input type="" class="form-control date-form" id="txtDate" runat="server" name="tgl_Input" placeholder="dd-mm-yyyy">
+                    <input type="" class="form-control date-form" id="tgl_Input" runat="server" name="tgl_Input" placeholder="dd-mm-yyyy">
                 </div>
                 <div class="mb-3">
                     <label for="saldo" class="form-label">Quantity</label>
@@ -109,7 +109,7 @@ include 'connection.php';
     <!-- date d-m-y -->
     <script type="text/javascript">
         $(function() {
-            $("#txtDate").datepicker({
+            $("#tgl_Input").datepicker({
                 dateFormat: 'dd-mm-yy'
             });
         });
@@ -117,7 +117,7 @@ include 'connection.php';
 
 
     <!-- insert form ajax-->
-    <script>
+    <script type="text/javascript">
         $(document).ready(function() {
             $('#submit').click(function(e) {
                 e.preventDefault();
@@ -125,8 +125,8 @@ include 'connection.php';
                 var program = $('#program').val();
                 var lokasi = $('#lokasi').val();
                 var kodeBarang = $('#kodeBarang').val();
-                var tgl_Input = $('#txtDate').val();
-                var saldo = $('#saldo').val();
+                var tgl_Input = $('#tgl_Input').val();
+                var saldo = $('#saldo_transaksi').val();
 
                 $.ajax({
                     type: 'POST',
@@ -137,21 +137,23 @@ include 'connection.php';
                         // remove all error message
                         $('.is-invalid').removeClass('is-invalid');
                         $('.invalid-feedback').remove();
-                        
+                        // console.log(response);
                         // if response status is error
                         if (response.status === 'error') {
                             // console.log(response);
                             errorItem = response.error;
                             // loop for each error to display on each form input
                             $.each(errorItem, function (i, item) {
-                                console.log(i, item);
+                                // console.log(i, item);
                                 $('#' + i).addClass('is-invalid');
                                 $('#' + i).after('<div class="invalid-feedback">' + item + '</div>');
                             });
                             alert('Error: ' + response.message);
                         } else {
+                            // console.log(response);
+                            alert('Success: ' + response.message);
                             window.location.href = 'index.php';
-                            alert('Data berhasil disimpan! Kembali ke halaman utama.');
+                            
                         }
                     }
                 });

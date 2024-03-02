@@ -12,23 +12,39 @@ if ($_POST['tgl_Input'] != null) {
 $saldo_transaksi = $_POST['saldo_transaksi'];
 
 // Begin validation input
-if ($_POST['program'] == null){
+
+$response['error'] = null;
+
+
+if ($_POST['program'] == null) {
     $response['error']['program'] = 'Program tidak boleh kosong!';
 }
 
-if ($_POST['lokasi'] == null){
+if ($_POST['lokasi'] == null) {
     $response['error']['lokasi'] = 'Lokasi tidak boleh kosong!';
 }
 
-if ($_POST['kodeBarang'] == null){
+if ($_POST['kodeBarang'] == null) {
     $response['error']['kodeBarang'] = 'Kode Barang tidak boleh kosong!';
 }
 
-if (!preg_match('/^[0-9]+$/', $_POST['saldo_transaksi'])) {
+if ($_POST['namaBarang'] == null) {
+    $response['error']['namaBarang'] = 'Nama Barang tidak boleh kosong!';
+}
+
+if ($_POST['tgl_Input'] == null) {
+    $response['error']['tgl_Input'] = 'Tanggal Transaksi tidak boleh kosong!';
+}
+
+if ($_POST['saldo_transaksi'] == null) {
+    $response['error']['saldo_transaksi'] = 'Saldo Transaksi tidak boleh kosong!';
+}
+
+if ($_POST['saldo_transaksi'] != null && !preg_match('/^[0-9]+$/', $_POST['saldo_transaksi'])) {
     $response['error']['saldo_transaksi'] = 'Saldo Transaksi tidak boleh berisi karakter spesial!';
 }
 
-if ($response['error'] != null) {
+if ($response['error']) {
     $response['status'] = 'error';
     $response['message'] = 'Silakan Isi Form yang Kosong!';
     echo json_encode($response);
@@ -55,7 +71,10 @@ if ($row_validasi != null) {
     $tanggal_masuk = $row_validasi['tglMasuk'];
     // $tgl_Input = date('Y-m-d', strtotime($tgl_Input));
     if ($tgl_Input < $tanggal_masuk) {
-        echo "<script>alert('Tanggal transaksi tidak boleh lebih kecil dari tanggal masuk terakhir.{$tgl_Input}'); window.location.href='index.php';</script>";
+        $response = [
+            'status' => 'error', 
+            'message' => 'Tanggal transaksi tidak boleh lebih kecil dari tanggal sebelumnya!'];
+        echo json_encode($response);
         exit;
     }
 }
@@ -74,7 +93,8 @@ if ($program == 1) {
         if ($query_stokbarang) {
             $lastId = mysqli_insert_id($conn);
         } else {
-            echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
+            $response = ['status' => 'error', 'message' => 'Gagal menambahkan data tabel Stok Barang!'];
+            echo json_encode($response);
             exit;
         }
     } else {
@@ -85,7 +105,8 @@ if ($program == 1) {
         if ($query_stokbarang) {
             $lastId = $row_stokbarang['Id'];
         } else {
-            echo "<script>alert('Gagal menambahkan data tabelstokbarang!'); window.location.href='index.php';</script>";
+            $response = ['status' => 'error', 'message' => 'Gagal menambahkan data tabel Stok Barang!'];
+            echo json_encode($response);
             exit;
         }
     }
@@ -116,12 +137,15 @@ if ($program == 1) {
     $query_history = mysqli_query($conn, $sql_history);
 
     if ($query_transaksihistory && $query_history) {
-        echo "<script>alert('Data berhasil ditambahkan!'); window.location.href='index.php';</script>";
+        $response = ['status' => 'success', 'message' => 'Data berhasil ditambahkan!'];
+        echo json_encode($response);
     } else {
-        echo "<script>alert('Gagal menambahkan data transaksihistory!'); window.location.href='index.php';</script>";
+        $response = ['status' => 'error', 'message' => 'Gagal menambahkan data transaksihistory!'];
+        echo json_encode($response);
+        exit;
     }
 } else if ($program == 2) {
-    
+
     $sql = "SELECT * FROM transaksi WHERE bukti LIKE 'KURANG%' ORDER BY bukti DESC";
     // hitung berapa jumlah bukti yang berisi awalan KURANG
     $q = mysqli_query($conn, $sql);
@@ -156,7 +180,8 @@ if ($program == 1) {
     //saldo 100
     //saldo 50
     if ($saldo_transaksi > $total_stokbarang) {
-        echo "<script>alert('Stok Barang Tidak Cukup!'); window.location.href='index.php';</script>";
+        $response = ['status' => 'error', 'message' => 'Stok Barang Tidak Cukup!'];
+        echo json_encode($response);
         mysqli_rollback($conn);
         exit;
     }

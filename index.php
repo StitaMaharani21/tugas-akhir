@@ -67,7 +67,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                         <a href="search-transaksi.php">
                             <button class="btn btn-outline-light" type="button">Search Transaction</button>
                         </a>
-                        <form action="restore.php" method="post">
+                        <form action="index.php" method="post">
                             <button class="btn btn-outline-light" type="submit" name="restore" value="yes" <?php
                                                                                                             if ($rowTransaksi['count'] == $rowHistory['count']) {
                                                                                                                 echo "disabled";
@@ -208,7 +208,7 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                         <input type="text" class="form-control" placeholder="Masukan Nama Barang" id="namaBarang" name="namaBarang">
                     </div>
                     <div class="col">
-                        <button type="submit" id= "submit-barang" class="btn btn-primary">Submit</button>
+                        <button type="submit" id="submit-barang" class="btn btn-primary">Submit</button>
                     </div>
                 </div>
             </form>
@@ -290,10 +290,19 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                 data: $('#form-lokasi').serialize(),
                 success: function(response) {
                     response = JSON.parse(response);
+                    $('.is-invalid').removeClass('is-invalid');
+                    $('.invalid-feedback').remove();
                     if (response.status === 'error') {
+                        errorItem = response.error;
+                        // loop for each error to display on each form input
+                        $.each(errorItem, function(i, item) {
+                            // console.log(i, item);
+                            $('#' + i).addClass('is-invalid');
+                            $('#' + i).after('<div class="invalid-feedback">' + item + '</div>');
+                        });
                         alert('Error: ' + response.message);
                     } else {
-                        alert('Data berhasil disimpan!');
+                        alert('Success: ' + response.message);
                         window.location.reload();
                     }
                 }
@@ -315,10 +324,19 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                 data: $('#form-barang').serialize(),
                 success: function(response) {
                     response = JSON.parse(response);
+                    $('.is-invalid').removeClass('is-invalid');
+                    $('.invalid-feedback').remove();
                     if (response.status === 'error') {
+                        errorItem = response.error;
+                        // loop for each error to display on each form input
+                        $.each(errorItem, function(i, item) {
+                            console.log(i, item);
+                            $('#' + i).addClass('is-invalid');
+                            $('#' + i).after('<div class="invalid-feedback">' + item + '</div>');
+                        });
                         alert('Error: ' + response.message);
                     } else {
-                        alert('Data berhasil disimpan!');
+                        alert('Success: ' + response.message);
                         window.location.reload();
                     }
                 }
