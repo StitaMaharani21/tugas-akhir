@@ -1,7 +1,7 @@
 <?php
 include 'connection.php';
-$program = $_POST['program'];
 // $bukti = $_POST['bukti'];
+$program = $_POST['program'];
 $lokasi = $_POST['lokasi'];
 $kodeBarang = $_POST['kodeBarang'];
 $namaBarang = $_POST['namaBarang'];
@@ -11,20 +11,30 @@ if ($_POST['tgl_Input'] != null) {
 }
 $saldo_transaksi = $_POST['saldo_transaksi'];
 
+// Begin validation input
+if ($_POST['program'] == null){
+    $response['error']['program'] = 'Program tidak boleh kosong!';
+}
 
+if ($_POST['lokasi'] == null){
+    $response['error']['lokasi'] = 'Lokasi tidak boleh kosong!';
+}
 
-if ($_POST['program'] == null || $_POST['lokasi'] == null || $_POST['kodeBarang'] == null || $_POST['namaBarang'] == null || $_POST['tgl_Input'] == null || $_POST['saldo_transaksi'] == null) {
-
-    $response = ['status' => 'error', 'message' => 'Silakan Isi Form yang Kosong!'];
-    echo json_encode($response);
-    exit;
+if ($_POST['kodeBarang'] == null){
+    $response['error']['kodeBarang'] = 'Kode Barang tidak boleh kosong!';
 }
 
 if (!preg_match('/^[0-9]+$/', $_POST['saldo_transaksi'])) {
-    $response = ['status' => 'error', 'message' => 'Saldo Transaksi tidak boleh berisi karakter spesial!'];
+    $response['error']['saldo_transaksi'] = 'Saldo Transaksi tidak boleh berisi karakter spesial!';
+}
+
+if ($response['error'] != null) {
+    $response['status'] = 'error';
+    $response['message'] = 'Silakan Isi Form yang Kosong!';
     echo json_encode($response);
     exit;
 }
+// End validation input
 
 date_default_timezone_set('Asia/Jakarta');
 $jamInput = date('H:i:s');

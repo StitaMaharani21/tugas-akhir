@@ -78,7 +78,7 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="saldo" class="form-label">Quantity</label>
-                    <input type="number" class="form-control" id="saldo" name="saldo_transaksi" value="<?php echo $saldo ?>">
+                    <input type="number" class="form-control" id="saldo_transaksi" name="saldo_transaksi" value="<?php echo $saldo ?>">
                 </div>
                 <div class="col mt-5px">
                     <button type="submit" class="btn btn-primary" id="submit" onclick="return confirm('Posting Data?')">Posting</button>
@@ -134,7 +134,20 @@ include 'connection.php';
                     data: $('#form-input').serialize(),
                     success: function(response) {
                         response = JSON.parse(response);
+                        // remove all error message
+                        $('.is-invalid').removeClass('is-invalid');
+                        $('.invalid-feedback').remove();
+                        
+                        // if response status is error
                         if (response.status === 'error') {
+                            // console.log(response);
+                            errorItem = response.error;
+                            // loop for each error to display on each form input
+                            $.each(errorItem, function (i, item) {
+                                console.log(i, item);
+                                $('#' + i).addClass('is-invalid');
+                                $('#' + i).after('<div class="invalid-feedback">' + item + '</div>');
+                            });
                             alert('Error: ' + response.message);
                         } else {
                             window.location.href = 'index.php';
