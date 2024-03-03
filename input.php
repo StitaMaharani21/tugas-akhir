@@ -134,15 +134,15 @@ include 'connection.php';
                     data: $('#form-input').serialize(),
                     success: function(response) {
                         response = JSON.parse(response);
-                        // remove all error message
+                        // cara untuk menghapus error message kalau di reload
                         $('.is-invalid').removeClass('is-invalid');
                         $('.invalid-feedback').remove();
                         // console.log(response);
-                        // if response status is error
+                        // cara untuk kasi tau programnya error atau success
                         if (response.status === 'error') {
                             // console.log(response);
                             errorItem = response.error;
-                            // loop for each error to display on each form input
+                            // kasi tau setiap error yang ada gimana(?)
                             $.each(errorItem, function (i, item) {
                                 // console.log(i, item);
                                 $('#' + i).addClass('is-invalid');

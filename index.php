@@ -53,6 +53,8 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
 
     <h1 class="text-center mt-5">PROGRAM STOK BARANG</h1>
 
+
+<!-- button fitur untuk transaksi histori -->
     <div class="card mx-auto mt-5 text-bg-secondary">
         <div class="card-body">
             <div class="row align-items-center">
@@ -294,7 +296,6 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                     $('.invalid-feedback').remove();
                     if (response.status === 'error') {
                         errorItem = response.error;
-                        // loop for each error to display on each form input
                         $.each(errorItem, function(i, item) {
                             // console.log(i, item);
                             $('#' + i).addClass('is-invalid');
@@ -328,7 +329,6 @@ $rowHistory = mysqli_fetch_assoc($resultHistory);
                     $('.invalid-feedback').remove();
                     if (response.status === 'error') {
                         errorItem = response.error;
-                        // loop for each error to display on each form input
                         $.each(errorItem, function(i, item) {
                             console.log(i, item);
                             $('#' + i).addClass('is-invalid');
