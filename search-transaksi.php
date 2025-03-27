@@ -25,7 +25,7 @@ include 'connection.php';
             Maintenance Stok
         </div>
         <div class="card-body">
-            <form action="" method="POST">
+            <form id="form-search">
                 <div class="mb-3">
                     <label for="bukti" class="form-label">Bukti</label>
                     <select class="form-select" aria-label="Default select example" id="bukti" name="bukti">
@@ -72,10 +72,10 @@ include 'connection.php';
                 </div>
                 <div class="mb-3">
                     <label for="tanggalInput" class="form-label">Tanggal Transaksi</label>
-                    <input type="" class="form-control date-form" id="txtDate" runat="server" name="tgl_Input">
+                    <input type="" class="form-control date-form" id="tgl_Input" runat="server" name="tgl_Input">
                 </div>
                 <div class="col mt-5px">
-                    <input type="submit" name="cari" value="Search" class="btn btn-primary" />
+                    <button type="submit" class="btn btn-primary" id="cari" name="cari">Search</button>
                     <a href="index.php" class="btn btn-primary">Cancel</a>
                 </div>
             </form>
@@ -108,80 +108,42 @@ include 'connection.php';
                         <th scope="col">User</th>
                     </tr>
                 </thead>
-                <tbody>
-
-                    <?php
-
-                    if (isset($_POST['cari'])) {
-                        $lokasi = $_POST['lokasi'];
-                        $kodeBarang = $_POST['kodeBarang'];
-                        $bukti = $_POST['bukti'];
-                        $tgl_Input = "";
-                        if ($_POST['tgl_Input'] != null) {
-                            $convert = DateTime::createFromFormat('d-m-Y', $_POST['tgl_Input']);
-                            $tgl_Input = $convert->format('Y-m-d');
-                        }
-
-                        $sql = "SELECT * FROM transaksi
-                    INNER JOIN tabelstokbarang ON transaksi.Id_Stok = tabelstokbarang.id
-                    INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
-                    INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id
-                    INNER JOIN masterprogram ON transaksi.Id_Program = masterprogram.Id
-                    INNER JOIN masteruser ON transaksi.Id_User = masteruser.Id
-                    
-                    ";
-
-                        if ($bukti && $kodeBarang && $lokasi && $tgl_Input) {
-                            $sql .= "WHERE lokasi LIKE '%$lokasi%' AND kodeBarang LIKE '%$kodeBarang%' AND bukti LIKE '%$bukti%' AND tgl_Input = '{$tgl_Input}' ";
-                        } elseif ($bukti == '' && $kodeBarang == '' && $lokasi == '' && $tgl_Input) {
-                            $sql .= "WHERE tgl_Input = '{$tgl_Input}' ";
-                        } elseif ($bukti == '' && $kodeBarang == '' && $lokasi && $tgl_Input == '') {
-                            $sql .= "WHERE lokasi LIKE '%$lokasi%'";
-                        } elseif ($bukti == '' && $kodeBarang && $lokasi == '' && $tgl_Input == '') {
-                            $sql .= "WHERE kodeBarang LIKE '%$kodeBarang%'";
-                        } elseif ($bukti && $kodeBarang == '' && $lokasi == '' && $tgl_Input == '') {
-                            $sql .= "WHERE bukti LIKE '%$bukti%'";
-                        } else {
-                            echo "<script>alert('Silakan Lengkapi Data Form!'); window.location.href='search-transaksi.php';</script>";
-                            exit;
-                        }
+                <tbody id="data_Transaksi">
 
 
-                        $sql .= "ORDER BY jam_Input,tgl_Input  ASC, bukti DESC";
-
-
-                        $query = mysqli_query($conn, $sql);
-                        while ($row = mysqli_fetch_assoc($query)) {
-
-                    ?>
-                            <tr>
-                                <td scope="row"><?php echo $row['bukti']; ?></td>
-                                <td scope="row"><?php echo date('d-m-Y', strtotime($row['tgl_Input'])); ?></td>
-                                <td scope="row"><?php echo $row['jam_Input']; ?></td>
-                                <td scope="row"><?php echo $row['lokasi']; ?></td>
-                                <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                                <td scope="row"><?php echo date('d-m-Y', strtotime($row['tglMasuk'])); ?></td>
-                                <td scope="row"><?php echo $row['saldo_transaksi']; ?></td>
-                                <td scope="row"><?php echo $row['program']; ?></td>
-                                <td scope="row"><?php echo $row['User']; ?></td>
-                            </tr>
-                    <?php
-                        }
-                    }
-                    ?>
 
                 </tbody>
             </table>
         </div>
     </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
 <script type="text/javascript">
     $(function() {
-        $("#txtDate").datepicker({
+        $("#tgl_Input").datepicker({
             dateFormat: 'dd-mm-yy'
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#data_Transaksi').load("dataTransaksi.php");
+        $("#cari").click(function(e) {
+            e.preventDefault();
+            var bukti = $('#bukti').val();
+            var lokasi = $('#lokasi').val();
+            var kodeBarang = $('#kodeBarang').val();
+            var tgl_Input = $('#tgl_Input').val();
+            $.ajax({
+                type: 'POST',
+                url: "dataTransaksi.php",
+                data: $('#form-search').serialize(),
+                success: function(data) {
+                    $('#data_Transaksi').html(data);
+                }
+            });
         });
     });
 </script>

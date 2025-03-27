@@ -133,13 +133,16 @@ if ($program == 1) {
     $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
 
     //backup data untuk transakasi
-    $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '$saldo_transaksi')";
+    $sql_history = "INSERT INTO history (Id_Stok, Id_Lokasi, Id_Barang, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$lastId','$lokasi','$kodeBarang','$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '$saldo_transaksi')";
     $query_history = mysqli_query($conn, $sql_history);
+
+    // var_dump($query_transaksihistory, $query_history);
 
     if ($query_transaksihistory && $query_history) {
         $response = ['status' => 'success', 'message' => 'Data berhasil ditambahkan!'];
         echo json_encode($response);
     } else {
+        // var_dump($response);
         $response = ['status' => 'error', 'message' => 'Gagal menambahkan data transaksihistory!'];
         echo json_encode($response);
         exit;
@@ -198,7 +201,7 @@ if ($program == 1) {
             $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-$saldo_transaksi')";
             $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
             //insert ke history(backup table)
-            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-$saldo_transaksi')";
+            $sql_history = "INSERT INTO history (Id_Stok, Id_Lokasi, Id_Barang, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId','$lokasi','$kodeBarang','$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-$saldo_transaksi')";
             $query_history = mysqli_query($conn, $sql_history);
             $saldo_transaksi = 0;
         } else {
@@ -211,7 +214,7 @@ if ($program == 1) {
             $sql_transaksihistory = "INSERT INTO transaksi (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-{$stokbarang[$i]['saldo']}')";
             $query_transaksihistory = mysqli_query($conn, $sql_transaksihistory);
             //insert ke history(backup table)
-            $sql_history = "INSERT INTO history (Id_Stok, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId', '$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-{$stokbarang[$i]['saldo']}')";
+            $sql_history = "INSERT INTO history (Id_Stok, Id_Lokasi, Id_Barang, Id_Program, Id_User, tgl_Input, jam_Input, bukti, saldo_transaksi) VALUES ('$insertId','$lokasi','$kodeBarang','$program', '$user', '$tgl_Input', '$jamInput', '$kodeBukti', '-{$stokbarang[$i]['saldo']}')";
             $query_history = mysqli_query($conn, $sql_history);
             $i++;
         }

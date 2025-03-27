@@ -14,7 +14,7 @@ while ($row = mysqli_fetch_assoc($query)) {
         <td scope="row"><?php echo $row['lokasi']; ?></td>
         <td scope="row"><?php echo $row['kodeBarang']; ?></td>
         <td scope="row"><?php echo $row['namaBarang']; ?></td>
-        <td scope="row"><?php echo $row['saldo']; ?></td>
+        <td scope="row"><?php echo number_format($row['saldo']) ."<br>"; ?></td>
         <td scope="row"><?php echo date('d-m-Y', strtotime($row['tglMasuk'])); ?></td>
     </tr>
 <?php }

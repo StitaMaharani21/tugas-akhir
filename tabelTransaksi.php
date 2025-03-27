@@ -19,7 +19,7 @@ while ($row = mysqli_fetch_assoc($query)) {
         <td scope="row"><?php echo $row['lokasi']; ?></td>
         <td scope="row"><?php echo $row['kodeBarang']; ?></td>
         <td scope="row"><?php echo date('d-m-Y', strtotime($row['tglMasuk'])); ?></td>
-        <td scope="row"><?php echo $row['saldo_transaksi']; ?></td>
+        <td scope="row"><?php echo number_format($row['saldo_transaksi']) ."<br>"; ?></td>
         <td scope="row"><?php echo $row['program']; ?></td>
         <td scope="row"><?php echo $row['User']; ?></td>
     </tr>

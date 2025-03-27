@@ -11,6 +11,12 @@ include 'connection.php';
     <title>Searching Data</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
+
+    <link type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js">
+    </script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js">
+    </script>
 </head>
 
 <body>
@@ -20,7 +26,7 @@ include 'connection.php';
             Maintenance Stok
         </div>
         <div class="card-body">
-            <form action="search-stock.php" method="POST">
+            <form id="form-search">
                 <div class="mb-3">
                     <label for="location" class="form-label">Location</label>
                     <select class="form-select" aria-label="Default select example" id="lokasi" name="lokasi">
@@ -48,7 +54,7 @@ include 'connection.php';
                     </select>
                 </div>
                 <div class="col mt-5px">
-                    <input type="submit" name="cari" value="Search" class="btn btn-primary" />
+                    <button type="submit" class="btn btn-primary" id="cari" name="cari">Search</button>
                     <a href="index.php" class="btn btn-primary">Cancel</a>
                 </div>
             </form>
@@ -68,48 +74,33 @@ include 'connection.php';
                         <th scope="col">Tanggal Masuk</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php
-                    if (isset($_POST['cari'])) {
-                        $lokasi = $_POST['lokasi'];
-                        $kodeBarang = $_POST['kodeBarang'];
-                        $sql = "SELECT * FROM tabelstokbarang 
-                                INNER JOIN masterlokasi ON tabelstokbarang.Id_lokasi = masterlokasi.Id
-                                INNER JOIN masterbarang ON tabelstokbarang.Id_Barang = masterbarang.Id 
-                                ";
+                <tbody id="datastok">
 
-                        if ($lokasi && $kodeBarang) {
-                            $sql .= "WHERE lokasi LIKE '%$lokasi%' AND kodeBarang LIKE '%$kodeBarang%'";
-                        } elseif ($lokasi && $kodeBarang == '') {
-                            $sql .= "WHERE lokasi LIKE '%$lokasi%'";
-                        } elseif ($kodeBarang && $lokasi == '') {
-                            $sql .= "WHERE kodeBarang LIKE '%$kodeBarang%'";
-                        }
-
-                        $sql .= "ORDER BY kodeBarang, tglMasuk ASC";
-
-                        $result = mysqli_query($conn, $sql);
-
-                        while ($row = mysqli_fetch_array($result)) {
-                    ?>
-                            <tr>
-                                <td scope="row"><?php echo $row['lokasi']; ?></td>
-                                <td scope="row"><?php echo $row['kodeBarang']; ?></td>
-                                <td scope="row"><?php echo $row['namaBarang']; ?></td>
-                                <td scope="row"><?php echo $row['saldo']; ?></td>
-                                <td scope="row"><?php echo $row['tglMasuk']; ?></td>
-                            </tr>
-                    <?php
-                        }
-                    }
-
-                    ?>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+   
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#datastok').load("dataStok.php");
+        $("#cari").click(function(e) {
+            e.preventDefault();
+            var lokasi = $('#lokasi').val();
+            var kodeBarang = $('#kodeBarang').val();
+            $.ajax({
+                type: 'POST',
+                url: "dataStok.php",
+                data: $('#form-search').serialize(),
+                success: function(data) {
+                    $('#datastok').html(data);
+                }
+            });
+        });
+    });
+</script>
 
 </html>

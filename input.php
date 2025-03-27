@@ -142,9 +142,9 @@ include 'connection.php';
                         if (response.status === 'error') {
                             // console.log(response);
                             errorItem = response.error;
-                            // kasi tau setiap error yang ada gimana(?)
+                            // kasi tau setiap error yang ada 
                             $.each(errorItem, function (i, item) {
-                                // console.log(i, item);
+                                console.log(i, item);
                                 $('#' + i).addClass('is-invalid');
                                 $('#' + i).after('<div class="invalid-feedback">' + item + '</div>');
                             });
